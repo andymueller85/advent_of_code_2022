@@ -5,7 +5,7 @@ const input = require('fs')
   .map(d => parseInt(d, 10))
 
 const count = input.reduce((acc, cur, i, a) => {
-  if (i === 0 || i > a.length + 2) return acc
+  if (i === 0 || i > a.length - 3) return acc
 
   const sumCur = cur + a[i + 1] + a[i + 2]
   const sumPrev = a[i - 1] + cur + a[i + 1]
