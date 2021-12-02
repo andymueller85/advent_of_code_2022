@@ -2,13 +2,8 @@ const input = require('fs')
   .readFileSync('./day_02/input.txt', 'utf8')
   .split('\n')
   .filter(d => d)
-  .map(d => {
-    const commandTuple = d.split(' ')
-    return {
-      command: commandTuple[0],
-      value: parseInt(commandTuple[1], 10)
-    }
-  })
+  .map(d => d.split(' '))
+  .map(([command, value]) => ({ command, value: parseInt(value, 10) }))
 
 let horPos = 0
 let depth = 0
