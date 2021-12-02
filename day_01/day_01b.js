@@ -4,13 +4,11 @@ const input = require('fs')
   .filter(d => d)
   .map(d => parseInt(d, 10))
 
-const count = input.reduce((acc, cur, i, a) => {
-  if (i === 0 || i > a.length - 3) return acc
-
-  const sumCur = cur + a[i + 1] + a[i + 2]
-  const sumPrev = a[i - 1] + cur + a[i + 1]
-
-  return sumCur > sumPrev ? acc + 1 : acc
-}, 0)
+// can omit cur + a[i + 1] because both sides of comparison have that.
+const count = input.reduce(
+  (acc, _, i, a) =>
+    i === 0 || i > a.length - 3 || a[i + 2] <= a[i - 1] ? acc : acc + 1,
+  0
+)
 
 console.log(count)
