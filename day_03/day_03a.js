@@ -5,12 +5,11 @@ const input = require('fs')
 
 const gammaRate = Array.from({ length: input[0].length }).reduce(
   (acc, _, i) =>
-    `${acc}${
-      input.map(n => n.charAt(i)).filter(d => d === '1').length >
-      input.length / 2
-        ? '1'
-        : '0'
-    }`,
+    acc +
+    (input.map(n => n.charAt(i)).filter(d => d === '1').length >
+    input.length / 2
+      ? '1'
+      : '0'),
   ''
 )
 
