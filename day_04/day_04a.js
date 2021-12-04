@@ -17,73 +17,60 @@ const boards = input.slice(1).map(b =>
     .filter(r => r.length > 0)
 )
 
-const allRowIndecies = Array.from({ length: boards[0][0].length }, (_, i) => i)
-
-const swapXY = board => allRowIndecies.map(c => board.map(r => r[c]))
-const rowIsComplete = r => r.every(n => n.marked)
-
 const markBoard = (board, drawnNumber) => {
-  let cIdx = -1
-  const rIdx = board.reduce((acc, curRow, i) => {
+  const markAtIndex = (arr, i) => [
+    ...arr.slice(0, i),
+    { ...arr[i], marked: true },
+    ...arr.slice(i + 1)
+  ]
+  let foundCol = -1
+  const foundRow = board.reduce((acc, curRow, i) => {
     if (acc >= 0) return acc
 
-    cIdx = acc >= 0 ? acc : curRow.findIndex(r => r.num === drawnNumber)
-    return cIdx === -1 ? -1 : i
+    foundCol = acc >= 0 ? acc : curRow.findIndex(r => r.num === drawnNumber)
+    return foundCol === -1 ? -1 : i
   }, -1)
 
-  return rIdx >= 0 && cIdx >= 0
-    ? board.map((r, i) => {
-        return i === rIdx
-          ? [
-              ...r.slice(0, cIdx),
-              { ...r[cIdx], marked: true },
-              ...r.slice(cIdx + 1)
-            ]
-          : r
-      })
+  return foundRow >= 0 && foundCol >= 0
+    ? board.map((r, i) => (i === foundRow ? markAtIndex(r, foundCol) : r))
     : board
 }
 
 const isWinner = board => {
-  const rowWinner = board.some(rowIsComplete)
-  const columnWinner = swapXY(board).some(rowIsComplete)
-  // const diagonalWinner =
-  //   allRowIndecies.every(i => board[i][i].marked) ||
-  //   allRowIndecies.every(i => board[i][allRowIndecies.length - i - 1].marked)
+  const swapXY = board =>
+    Array.from({ length: boards[0][0].length }, (_, i) => i).map(c =>
+      board.map(r => r[c])
+    )
+  const rowIsComplete = r => r.every(n => n.marked)
 
-  return rowWinner || columnWinner
+  return board.some(rowIsComplete) || swapXY(board).some(rowIsComplete)
 }
 
-const drawNumbers = (rBoards, calledNumberIndex = 0) => {
-  const markedBoards = rBoards.map(b =>
+const declareWinner = (board, lastCalledNumber) => {
+  const sumUnmarkedNums = board.reduce((acc, curRow) => {
+    return (
+      acc +
+      curRow.reduce((innerAcc, curNum) => {
+        return innerAcc + (curNum.marked ? 0 : parseInt(curNum.num, 10))
+      }, 0)
+    )
+  }, 0)
+
+  console.log({ sumUnmarkedNums, lastCalledNumber })
+  console.log('answer', sumUnmarkedNums * parseInt(lastCalledNumber, 10))
+}
+
+const playBingo = (currentBoards, calledNumberIndex = 0) => {
+  const markedBoards = currentBoards.map(b =>
     markBoard(b, numbersDraw[calledNumberIndex])
   )
-
-  const markedNumbers = markedBoards
-    .map(b => b.map(r => r.filter(c => c.marked).map(c => c.num)))
-    .flat()
-    .flat()
-
   const winningBoard = markedBoards.find(isWinner)
 
   if (winningBoard) {
-    const sumUnmarkedNums = winningBoard.reduce((acc, curRow) => {
-      return (
-        acc +
-        curRow.reduce((innerAcc, curNum) => {
-          return innerAcc + (curNum.marked ? 0 : parseInt(curNum.num))
-        }, 0)
-      )
-    }, 0)
-
-    console.log({
-      sumUnmarkedNums,
-      lastCalledNumber: numbersDraw[calledNumberIndex]
-    })
-    console.log('answer', sumUnmarkedNums * numbersDraw[calledNumberIndex])
+    declareWinner(winningBoard, numbersDraw[calledNumberIndex])
   } else {
-    drawNumbers(markedBoards, calledNumberIndex + 1)
+    playBingo(markedBoards, calledNumberIndex + 1)
   }
 }
 
-drawNumbers(boards)
+playBingo(boards)
