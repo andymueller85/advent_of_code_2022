@@ -50,16 +50,9 @@
       "type": "node",
       "args": ["--trace-warnings"],
       "request": "launch",
-      "name": "Day 4a",
+      "name": "Day 4",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/day_04/day_04a.js"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Day 4b",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/day_04/day_04b.js"
+      "program": "${workspaceFolder}/day_04/day_04.js"
     }
   ]
 }

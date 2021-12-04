@@ -58,8 +58,16 @@ const declareWinner = (board, lastCalledNumber) => {
 
   console.log({ sumUnmarkedNums, lastCalledNumber })
   console.log('answer', sumUnmarkedNums * parseInt(lastCalledNumber, 10))
+  console.log('')
 }
 
+const clearWinningBoards = (boards, winningBoardIndecies) => {
+  const boardsClone = [...boards]
+  winningBoardIndecies.reverse().forEach(i => {
+    boardsClone.splice(i, 1)
+  })
+  return boardsClone
+}
 const playBingo = (currentBoards, calledNumberIndex = 0) => {
   const markedBoards = currentBoards.map(b =>
     markBoard(b, numbersDraw[calledNumberIndex])
@@ -67,10 +75,38 @@ const playBingo = (currentBoards, calledNumberIndex = 0) => {
   const winningBoard = markedBoards.find(isWinner)
 
   if (winningBoard) {
+    console.log('I won!!')
     declareWinner(winningBoard, numbersDraw[calledNumberIndex])
   } else {
     playBingo(markedBoards, calledNumberIndex + 1)
   }
 }
 
+const letTheSquidWin = (currentBoards, calledNumberIndex = 0) => {
+  const markedBoards = currentBoards.map(b =>
+    markBoard(b, numbersDraw[calledNumberIndex])
+  )
+  const winningBoardIndecies = markedBoards
+    .map((b, i) => ({ board: b, index: i }))
+    .filter(({ board }) => isWinner(board))
+    .map(({ index }) => index)
+
+  const remainingBoards =
+    markedBoards.length > 1
+      ? clearWinningBoards(markedBoards, winningBoardIndecies)
+      : markedBoards
+
+  if (
+    currentBoards.length === 1 &&
+    remainingBoards.length === 1 &&
+    winningBoardIndecies.length === 1
+  ) {
+    console.log('The Squid Won!!')
+    declareWinner(remainingBoards[0], numbersDraw[calledNumberIndex])
+  } else {
+    letTheSquidWin(remainingBoards, calledNumberIndex + 1)
+  }
+}
+
 playBingo(boards)
+letTheSquidWin(boards)
