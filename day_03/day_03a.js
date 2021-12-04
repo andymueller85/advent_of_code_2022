@@ -6,7 +6,7 @@ const input = require('fs')
 const gammaRate = Array.from({ length: input[0].length }).reduce(
   (acc, _, i) =>
     `${acc}${
-      input.map(n => n.split('')[i]).filter(d => d === '1').length >
+      input.map(n => n.charAt(i)).filter(d => d === '1').length >
       input.length / 2
         ? '1'
         : '0'
@@ -23,4 +23,4 @@ const gammaAsDecimal = parseInt(gammaRate, 2)
 const epsilonAsDecimal = parseInt(epsilonRate, 2)
 
 console.log({ gammaRate, gammaAsDecimal, epsilonRate, epsilonAsDecimal })
-console.log({ answer: gammaAsDecimal * epsilonAsDecimal })
+console.log('answer', gammaAsDecimal * epsilonAsDecimal)
