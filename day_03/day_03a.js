@@ -16,8 +16,7 @@ const gammaRate = Array.from({ length: input[0].length }).reduce(
 
 const epsilonRate = gammaRate
   .split('')
-  .map(d => (d === '0' ? '1' : '0'))
-  .join('')
+  .reduce((acc, cur) => acc + (cur === '0' ? '1' : '0'), '')
 
 const gammaAsDecimal = parseInt(gammaRate, 2)
 const epsilonAsDecimal = parseInt(epsilonRate, 2)
