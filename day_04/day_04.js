@@ -36,15 +36,15 @@ const markBoard = (board, drawnNumber) => {
     : board
 }
 
-const isWinner = board => {
-  const swapXY = board =>
-    Array.from({ length: boards[0][0].length }, (_, i) => i).map(c =>
-      board.map(r => r[c])
-    )
-  const rowIsComplete = r => r.every(n => n.marked)
+const swapXY = board =>
+  Array.from({ length: boards[0][0].length }, (_, i) => i).map(c =>
+    board.map(r => r[c])
+  )
 
-  return board.some(rowIsComplete) || swapXY(board).some(rowIsComplete)
-}
+const rowIsComplete = r => r.every(n => n.marked)
+
+const isWinner = board =>
+  board.some(rowIsComplete) || swapXY(board).some(rowIsComplete)
 
 const declareWinner = (board, lastCalledNumber) => {
   const sumUnmarkedNums = board.reduce((acc, curRow) => {
@@ -61,13 +61,14 @@ const declareWinner = (board, lastCalledNumber) => {
   console.log('')
 }
 
-const clearWinningBoards = (boards, winningBoardIndecies) => {
-  const boardsClone = [...boards]
+const clearWinningBoards = (currentBoards, winningBoardIndecies) => {
+  const boardsClone = [...currentBoards]
   winningBoardIndecies.reverse().forEach(i => {
     boardsClone.splice(i, 1)
   })
   return boardsClone
 }
+
 const playBingo = (currentBoards, calledNumberIndex = 0) => {
   const markedBoards = currentBoards.map(b =>
     markBoard(b, numbersDraw[calledNumberIndex])
