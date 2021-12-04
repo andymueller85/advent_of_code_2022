@@ -45,6 +45,21 @@
       "name": "Day 3b",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/day_03/day_03b.js"
+    },
+    {
+      "type": "node",
+      "args": ["--trace-warnings"],
+      "request": "launch",
+      "name": "Day 4a",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_04/day_04a.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Day 4b",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_04/day_04b.js"
     }
   ]
 }
