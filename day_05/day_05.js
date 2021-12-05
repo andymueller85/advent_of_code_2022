@@ -1,4 +1,4 @@
-const go = fileName => {
+const go = (fileName, includeDiagonals) => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n')
@@ -31,18 +31,20 @@ const go = fileName => {
       for (i = startIndex; i < startIndex + lineLength; i++) {
         grid[startY][i]++
       }
-    } else {
+    } else if (includeDiagonals) {
       // diagonal
       const lineLength = Math.abs(startX - endX) + 1
+      const startXIndex = startX < endX ? startX : endX
+      let x = startXIndex
+
       if (
         (startY > endY && startX < endX) ||
         (startY < endY && startX > endX)
       ) {
         // up slope
-        const startXIndex = startX < endX ? startX : endX
         const startYIndex = startY < endY ? endY : startY
-        let x = startXIndex
         let y = startYIndex
+
         while (x < startXIndex + lineLength) {
           grid[y][x]++
           x++
@@ -50,10 +52,7 @@ const go = fileName => {
         }
       } else {
         // down slope
-        const startXIndex = startX < endX ? startX : endX
         const startYIndex = startY < endY ? startY : endY
-
-        let x = startXIndex
         let y = startYIndex
 
         while (x < startXIndex + lineLength) {
@@ -68,8 +67,21 @@ const go = fileName => {
   return grid.flat().reduce((acc, cur) => acc + (cur >= 2 ? 1 : 0), 0)
 }
 
-const sampleAnswer = go('./day_05/sample_input.txt')
-console.log('sample answer', sampleAnswer)
-if (sampleAnswer !== 12) throw new Error("this ain't it, jack")
 
-console.log('real answer', go('./day_05/input.txt'))
+const process = (part, expectedAnswer, includeDiagonals) => {
+  const sampleAnswer = go('./day_05/sample_input.txt', includeDiagonals)
+
+  console.log(`part ${part} sample answer`, sampleAnswer)
+  if (sampleAnswer !== expectedAnswer) {
+    throw new Error(`${part} one sample answer should be ${expectedAnswer}`)
+  }
+
+  console.log(
+    `part ${part} real answer`,
+    go('./day_05/input.txt', includeDiagonals)
+  )
+}
+
+process('a', 5, false)
+process('b', 12, true)
+
