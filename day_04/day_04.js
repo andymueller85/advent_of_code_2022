@@ -23,13 +23,9 @@ const markBoard = (board, drawnNumber) => {
     { ...arr[i], marked: true },
     ...arr.slice(i + 1)
   ]
-  let foundCol = -1
-  const foundRow = board.reduce((acc, curRow, i) => {
-    if (acc >= 0) return acc
-
-    foundCol = acc >= 0 ? acc : curRow.findIndex(r => r.num === drawnNumber)
-    return foundCol === -1 ? -1 : i
-  }, -1)
+  const numberMatch = ({ num }) => num === drawnNumber
+  const foundRow = board.findIndex(r => r.some(numberMatch))
+  const foundCol = foundRow >= 0 ? board[foundRow].findIndex(numberMatch) : -1
 
   return foundRow >= 0 && foundCol >= 0
     ? board.map((r, i) => (i === foundRow ? markAtIndex(r, foundCol) : r))
@@ -66,6 +62,7 @@ const clearWinningBoards = (currentBoards, winningBoardIndecies) => {
   winningBoardIndecies.reverse().forEach(i => {
     boardsClone.splice(i, 1)
   })
+
   return boardsClone
 }
 
@@ -88,9 +85,9 @@ const letTheSquidWin = (currentBoards, calledNumberIndex = 0) => {
     markBoard(b, numbersDraw[calledNumberIndex])
   )
   const winningBoardIndecies = markedBoards
-    .map((b, i) => ({ board: b, index: i }))
-    .filter(({ board }) => isWinner(board))
-    .map(({ index }) => index)
+    .map((b, i) => ({ b, i }))
+    .filter(({ b }) => isWinner(b))
+    .map(({ i }) => i)
 
   const remainingBoards =
     markedBoards.length > 1
