@@ -2,9 +2,7 @@ const input = require('fs')
   .readFileSync('./day_04/input.txt', 'utf8')
   .split('\n\n')
   .filter(d => d)
-
-const numbersDraw = input[0].split(',')
-
+const bingoNumbers = input[0].split(',')
 const boards = input.slice(1).map(b =>
   b
     .split('\n')
@@ -37,20 +35,22 @@ const swapXY = board =>
     board.map(r => r[c])
   )
 
-const rowIsComplete = r => r.every(n => n.marked)
+const rowIsComplete = r => r.every(({ marked }) => marked)
 
 const isWinner = board =>
   board.some(rowIsComplete) || swapXY(board).some(rowIsComplete)
 
 const declareWinner = (board, lastCalledNumber) => {
-  const sumUnmarkedNums = board.reduce((acc, curRow) => {
-    return (
+  const sumUnmarkedNums = board.reduce(
+    (acc, curRow) =>
       acc +
-      curRow.reduce((innerAcc, curNum) => {
-        return innerAcc + (curNum.marked ? 0 : parseInt(curNum.num, 10))
-      }, 0)
-    )
-  }, 0)
+      curRow.reduce(
+        (innerAcc, { marked, num }) =>
+          innerAcc + (marked ? 0 : parseInt(num, 10)),
+        0
+      ),
+    0
+  )
 
   console.log({ sumUnmarkedNums, lastCalledNumber })
   console.log('answer', sumUnmarkedNums * parseInt(lastCalledNumber, 10))
@@ -59,22 +59,21 @@ const declareWinner = (board, lastCalledNumber) => {
 
 const clearWinningBoards = (currentBoards, winningBoardIndecies) => {
   const boardsClone = [...currentBoards]
-  winningBoardIndecies.reverse().forEach(i => {
-    boardsClone.splice(i, 1)
-  })
+
+  winningBoardIndecies.reverse().forEach(i => boardsClone.splice(i, 1))
 
   return boardsClone
 }
 
 const playBingo = (currentBoards, calledNumberIndex = 0) => {
   const markedBoards = currentBoards.map(b =>
-    markBoard(b, numbersDraw[calledNumberIndex])
+    markBoard(b, bingoNumbers[calledNumberIndex])
   )
   const winningBoard = markedBoards.find(isWinner)
 
   if (winningBoard) {
     console.log('I won!!')
-    declareWinner(winningBoard, numbersDraw[calledNumberIndex])
+    declareWinner(winningBoard, bingoNumbers[calledNumberIndex])
   } else {
     playBingo(markedBoards, calledNumberIndex + 1)
   }
@@ -82,7 +81,7 @@ const playBingo = (currentBoards, calledNumberIndex = 0) => {
 
 const letTheSquidWin = (currentBoards, calledNumberIndex = 0) => {
   const markedBoards = currentBoards.map(b =>
-    markBoard(b, numbersDraw[calledNumberIndex])
+    markBoard(b, bingoNumbers[calledNumberIndex])
   )
   const winningBoardIndecies = markedBoards
     .map((b, i) => ({ b, i }))
@@ -100,7 +99,7 @@ const letTheSquidWin = (currentBoards, calledNumberIndex = 0) => {
     winningBoardIndecies.length === 1
   ) {
     console.log('The Squid Won!!')
-    declareWinner(remainingBoards[0], numbersDraw[calledNumberIndex])
+    declareWinner(remainingBoards[0], bingoNumbers[calledNumberIndex])
   } else {
     letTheSquidWin(remainingBoards, calledNumberIndex + 1)
   }
