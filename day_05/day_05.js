@@ -14,13 +14,11 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
   const makeDiagonalLine = (isUpSlope, startYIndex, startX, endX) => {
     const lineLength = Math.abs(startX - endX) + 1
     const startXIndex = startX < endX ? startX : endX
-    let x = startXIndex
     let y = startYIndex
 
-    while (x < startXIndex + lineLength) {
+    for (let x = startXIndex; x < startXIndex + lineLength; x++) {
       grid[y][x]++
-      x++
-      y = isUpSlope ? y - 1 : y + 1
+      y += isUpSlope ? -1 : 1
     }
   }
 
@@ -31,16 +29,16 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
 
     if (startX === endX) {
       // vertical
-      const startIndex = startY < endY ? startY : endY
+      const start = Math.min(startY, endY)
 
-      for (i = startIndex; i < startIndex + Math.abs(endY - startY) + 1; i++) {
+      for (let i = start; i < start + Math.abs(endY - startY) + 1; i++) {
         grid[i][startX]++
       }
     } else if (startY === endY) {
       // horizontal
-      const startIndex = startX < endX ? startX : endX
+      const start = Math.min(startX, endX)
 
-      for (i = startIndex; i < startIndex + Math.abs(startX - endX) + 1; i++) {
+      for (let i = start; i < start + Math.abs(startX - endX) + 1; i++) {
         grid[startY][i]++
       }
     } else if (includeDiagonals) {
@@ -49,10 +47,10 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
         (startY < endY && startX > endX)
       ) {
         // up slope
-        makeDiagonalLine(true, startY < endY ? endY : startY, startX, endX)
+        makeDiagonalLine(true, Math.max(startY, endY), startX, endX)
       } else {
         // down slope
-        makeDiagonalLine(false, startY < endY ? startY : endY, startX, endX)
+        makeDiagonalLine(false, Math.min(startY, endY), startX, endX)
       }
     }
   })
