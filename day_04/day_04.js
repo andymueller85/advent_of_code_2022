@@ -50,10 +50,10 @@ const declareWinner = (board, lastCalledNumber) => {
   console.log('')
 }
 
-const clearWinningBoards = (currentBoards, winningBoardIndecies) => {
-  const boardsClone = [...currentBoards]
+const clearBoards = (myBoards, indecies) => {
+  const boardsClone = [...myBoards]
 
-  winningBoardIndecies.reverse().forEach(i => boardsClone.splice(i, 1))
+  indecies.reverse().forEach(i => boardsClone.splice(i, 1))
 
   return boardsClone
 }
@@ -83,7 +83,7 @@ const letTheSquidWin = (currentBoards, calledNumberIndex = 0) => {
 
   const remainingBoards =
     markedBoards.length > 1
-      ? clearWinningBoards(markedBoards, winningBoardIndecies)
+      ? clearBoards(markedBoards, winningBoardIndecies)
       : markedBoards
 
   if (
