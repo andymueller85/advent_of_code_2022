@@ -41,16 +41,9 @@ const isWinner = board =>
   board.some(rowIsComplete) || swapXY(board).some(rowIsComplete)
 
 const declareWinner = (board, lastCalledNumber) => {
-  const sumUnmarkedNums = board.reduce(
-    (acc, curRow) =>
-      acc +
-      curRow.reduce(
-        (innerAcc, { marked, num }) =>
-          innerAcc + (marked ? 0 : parseInt(num, 10)),
-        0
-      ),
-    0
-  )
+  const sumUnmarkedNums = board
+    .flat()
+    .reduce((acc, { marked, num }) => acc + (marked ? 0 : parseInt(num, 10)), 0)
 
   console.log({ sumUnmarkedNums, lastCalledNumber })
   console.log('answer', sumUnmarkedNums * parseInt(lastCalledNumber, 10))
