@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 
 class LanternFish {
-  constructor(timer) {
+  constructor(timer = '8') {
     this.timer = parseInt(timer, 10)
   }
 
@@ -14,12 +14,11 @@ class LanternFish {
   }
 
   advanceDay() {
-    if (this.timer === 0) this.timer = 6
-    else this.timer--
+    this.timer += this.timer === 0 ? 6 : -1
   }
 }
 
-export const go = fileName => {
+export const spawnFishies = (fileName, days) => {
   const input = fs.readFileSync(fileName, 'utf8').replace('\n', '').split(',')
 
   const fishies = Array.from(
@@ -27,10 +26,10 @@ export const go = fileName => {
     (_, i) => new LanternFish(input[i])
   )
 
-  Array.from({ length: 80 }).forEach(() => {
+  Array.from({ length: days }).forEach(() => {
     const newFishies = fishies
       .filter(f => f.timer === 0)
-      .map(() => new LanternFish('8'))
+      .map(() => new LanternFish())
 
     fishies.forEach(f => f.advanceDay())
     fishies.push(...newFishies)
@@ -39,15 +38,18 @@ export const go = fileName => {
   return fishies.length
 }
 
-const process = (part, expectedAnswer) => {
-  const sampleAnswer = go('./day_06/sample_input.txt')
+const process = (part, expectedAnswer, days) => {
+  const sampleAnswer = spawnFishies('./day_06/sample_input.txt', days)
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part ${part} real answer`, go('./day_06/input.txt'))
+  console.log(
+    `part ${part} real answer`,
+    spawnFishies('./day_06/input.txt', days)
+  )
 }
 
-process('A', 5934)
+process('A', 5934, 80)
