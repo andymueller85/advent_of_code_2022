@@ -12,12 +12,10 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
     coordinates.split(',').map(c => parseInt(c, 10))
 
   const makeDiagonalLine = (isUpSlope, startYIndex, startX, endX) => {
-    const lineLength = Math.abs(startX - endX) + 1
-    const startXIndex = Math.min(startX, endX)
     let y = startYIndex
 
-    for (let x = startXIndex; x < startXIndex + lineLength; x++) {
-      grid[y][x]++
+    for (let x = 0; x <= Math.abs(startX - endX); x++) {
+      grid[y][x + Math.min(startX, endX)]++
       y += isUpSlope ? -1 : 1
     }
   }
@@ -31,15 +29,15 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
       // vertical
       const start = Math.min(startY, endY)
 
-      for (let i = start; i <= start + Math.abs(endY - startY); i++) {
-        grid[i][startX]++
+      for (let i = 0; i <= Math.abs(endY - startY); i++) {
+        grid[i + start][startX]++
       }
     } else if (startY === endY) {
       // horizontal
       const start = Math.min(startX, endX)
 
-      for (let i = start; i <= start + Math.abs(startX - endX); i++) {
-        grid[startY][i]++
+      for (let i = 0; i <= Math.abs(startX - endX); i++) {
+        grid[startY][i + start]++
       }
     } else if (
       includeDiagonals &&
