@@ -3,10 +3,11 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
     .readFileSync(fileName, 'utf8')
     .split('\n')
     .filter(d => d)
+    
+  const newArray = (length, mapFn = (_, i) => i) =>
+    Array.from({ length }, mapFn)
 
-  const grid = Array.from({ length: gridSize }).map(a =>
-    Array.from({ length: gridSize }, () => 0)
-  )
+  const grid = newArray(gridSize).map(() => newArray(gridSize, () => 0))
 
   const splitCoordinates = coordinates =>
     coordinates.split(',').map(c => parseInt(c, 10))
@@ -14,10 +15,10 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
   const makeDiagonalLine = (isUpSlope, startYIndex, startX, endX) => {
     let y = startYIndex
 
-    for (let x = 0; x <= Math.abs(startX - endX); x++) {
+    newArray(Math.abs(startX - endX) + 1).forEach(x => {
       grid[y][x + Math.min(startX, endX)]++
       y += isUpSlope ? -1 : 1
-    }
+    })
   }
 
   input.forEach(line => {
@@ -29,16 +30,16 @@ const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
       // vertical
       const start = Math.min(startY, endY)
 
-      for (let i = 0; i <= Math.abs(endY - startY); i++) {
-        grid[i + start][startX]++
-      }
+      newArray(Math.abs(endY - startY) + 1).forEach(
+        y => grid[y + start][startX]++
+      )
     } else if (startY === endY) {
       // horizontal
       const start = Math.min(startX, endX)
 
-      for (let i = 0; i <= Math.abs(startX - endX); i++) {
-        grid[startY][i + start]++
-      }
+      newArray(Math.abs(startX - endX) + 1).forEach(
+        x => grid[startY][x + start]++
+      )
     } else if (
       includeDiagonals &&
       ((startY > endY && startX < endX) || (startY < endY && startX > endX))
