@@ -44,4 +44,5 @@ const process = (part, expectedAnswer, days) => {
   )
 }
 
+process('A', 5934, 80)
 process('B', 26984457539, 256)
