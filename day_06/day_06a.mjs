@@ -4,15 +4,12 @@ class LanternFish {
   constructor(timer = '8') {
     this.timer = parseInt(timer, 10)
   }
-
   get timer() {
     return this._timer
   }
-
   set timer(t) {
     this._timer = t
   }
-
   advanceDay() {
     this.timer += this.timer === 0 ? 6 : -1
   }
@@ -20,11 +17,8 @@ class LanternFish {
 
 export const spawnFishies = (fileName, days) => {
   const input = fs.readFileSync(fileName, 'utf8').replace('\n', '').split(',')
-
-  const fishies = Array.from(
-    { length: input.length },
-    (_, i) => new LanternFish(input[i])
-  )
+  const { length } = input
+  const fishies = Array.from({ length }, (_, i) => new LanternFish(input[i]))
 
   Array.from({ length: days }).forEach(() => {
     const newFishies = fishies

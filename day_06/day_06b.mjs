@@ -2,32 +2,23 @@ import * as fs from 'fs'
 
 export const spawnFishies = (fileName, days) => {
   const input = fs.readFileSync(fileName, 'utf8').replace('\n', '').split(',')
-  const fishieCount = timer => input.filter(f => f === timer).length
-
-  let f0 = fishieCount('0')
-  let f1 = fishieCount('1')
-  let f2 = fishieCount('2')
-  let f3 = fishieCount('3')
-  let f4 = fishieCount('4')
-  let f5 = fishieCount('5')
-  let f6 = fishieCount('6')
-  let f7 = fishieCount('7')
-  let f8 = fishieCount('8')
+  const fishiesArray = Array.from(
+    { length: 9 },
+    (_, i) => input.filter(f => f === i.toString()).length
+  )
 
   Array.from({ length: days }).forEach(() => {
-    const f0Holder = f0
-    f0 = f1
-    f1 = f2
-    f2 = f3
-    f3 = f4
-    f4 = f5
-    f5 = f6
-    f6 = f0Holder + f7
-    f7 = f8
-    f8 = f0Holder
+    const f0Holder = fishiesArray[0]
+
+    Array.from({ length: 8 }, (_, i) => i).forEach(f => {
+      fishiesArray[f] = fishiesArray[f + 1]
+    })
+
+    fishiesArray[6] += f0Holder
+    fishiesArray[8] = f0Holder
   })
 
-  return f0 + f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8
+  return fishiesArray.reduce((acc, cur) => acc + cur)
 }
 
 const process = (part, expectedAnswer, days) => {
