@@ -8,15 +8,24 @@ const alignCrabs = fileName => {
   const min = Math.min(...input)
   const max = Math.max(...input)
 
+  const crabCost = (pos, destination) => {
+    const distance = Math.abs(pos - destination)
+
+    return Array.from({ length: distance + 1 }, (_, i) => i + 1).reduce(
+      (acc, _, i) => acc + i,
+      0
+    )
+  }
+
   return Array.from({ length: max - min + 1 }, (_, i) => i + min).reduce(
-    (acc, position) => {
-      const crabFuelConsumption = input.reduce(
+    (overallMin, destination) => {
+      const totalCrabFuelConsumption = input.reduce(
         (crabFuel, crabPosition) =>
-          crabFuel + Math.abs(crabPosition - position),
+          crabFuel + crabCost(crabPosition, destination),
         0
       )
 
-      return Math.min(crabFuelConsumption, acc)
+      return Math.min(totalCrabFuelConsumption, overallMin)
     },
     Number.MAX_VALUE
   )
@@ -33,4 +42,4 @@ const process = (part, expectedAnswer) => {
   console.log(`part ${part} real answer`, alignCrabs('./day_07/input.txt'))
 }
 
-process('A', 37)
+process('B', 168)
