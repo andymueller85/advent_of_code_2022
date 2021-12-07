@@ -17,8 +17,7 @@ class LanternFish {
 
 export const spawnFishies = (fileName, days) => {
   const input = fs.readFileSync(fileName, 'utf8').replace('\n', '').split(',')
-  const { length } = input
-  const fishies = Array.from({ length }, (_, i) => new LanternFish(input[i]))
+  const fishies = input.map(f => new LanternFish(f))
 
   Array.from({ length: days }).forEach(() => {
     const newFishies = fishies
