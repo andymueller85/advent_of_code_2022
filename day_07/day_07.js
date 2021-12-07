@@ -5,8 +5,7 @@ const alignCrabs = (fileName, crabCostFn) => {
     .split(',')
     .map(n => parseInt(n, 10))
 
-  const min = Math.min(...input)
-  const max = Math.max(...input)
+  const [min, max] = [Math.min(...input), Math.max(...input)]
 
   return Array.from({ length: max - min + 1 }, (_, i) => i + min).reduce(
     (overallMin, destination) => {
@@ -45,4 +44,8 @@ const premiumCrabCost = (a, b) => {
 }
 
 process('A', 37, cheapCrabCost)
+
+// This is pretty inefficient. It could probably be
+// made smarter by sorting the numbers and starting in the middle and working outward.
+// Once the values start getting bigger, can stop checking.
 process('B', 168, premiumCrabCost)
