@@ -11,10 +11,7 @@ const alignCrabs = (fileName, crabCostFn) => {
   )
 
   const getCost = i =>
-    input.reduce(
-      (crabFuel, crabPosition) => crabFuel + crabCostFn(crabPosition, i),
-      0
-    )
+    input.reduce((cost, crabPosition) => cost + crabCostFn(crabPosition, i), 0)
 
   const middleishCost = getCost(middleishIndex)
 
@@ -23,7 +20,7 @@ const alignCrabs = (fileName, crabCostFn) => {
     let cursor = middleishIndex
     let candidate = 0
 
-    while (baseCost >= candidate) {
+    while (candidate <= baseCost) {
       cursor += goingUp ? 1 : -1
       candidate = getCost(cursor)
       baseCost = Math.min(baseCost, candidate)
