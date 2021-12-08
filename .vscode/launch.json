@@ -88,6 +88,13 @@
       "name": "Day 7 performance improvements",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/day_07/day_07_performance_improvements.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Day 8a",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_08/day_08a.js"
     }
   ]
 }
