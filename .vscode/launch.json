@@ -102,6 +102,20 @@
       "name": "Day 8b",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/day_08/day_08b.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Day 9a",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_09/day_09a.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Day 9b",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_09/day_09b.js"
     }
   ]
 }
