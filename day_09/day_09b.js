@@ -1,4 +1,4 @@
-const findLowPoints = (fileName, crabCostFn) => {
+const findLargesBasins = (fileName, crabCostFn) => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n')
@@ -7,40 +7,33 @@ const findLowPoints = (fileName, crabCostFn) => {
 
   const getNeighbors = (rowIndex, colIndex) => {
     const rowNeighbors = [
-      ...(colIndex > 0 ? [input[rowIndex][colIndex - 1]] : []),
-      ...(colIndex < input[0].length - 1 ? [input[rowIndex][colIndex + 1]] : [])
+      ...(colIndex > 0 ? [[rowIndex, colIndex - 1]] : []),
+      ...(colIndex < input[0].length - 1 ? [[rowIndex, colIndex + 1]] : [])
     ]
     const columnNeighbors = [
-      ...(rowIndex > 0 ? [input[rowIndex - 1][colIndex]] : []),
-      ...(rowIndex < input.length - 1 ? [input[rowIndex + 1][colIndex]] : [])
+      ...(rowIndex > 0 ? [[rowIndex - 1, colIndex]] : []),
+      ...(rowIndex < input.length - 1 ? [[rowIndex + 1, colIndex]] : [])
     ]
 
-    return [...rowNeighbors, ...columnNeighbors]
+    return [...rowNeighbors, ...columnNeighbors].filter(
+      ([r, c]) => input[r][c] !== 9 && input[r][c] > input[rowIndex][colIndex]
+    )
   }
 
-  const getBasin = (rI, cI) => {
+  const strCoordinates = ([r, c]) => [r.toString(), c.toString()].join('')
+
+  const getBasinLengths = (rI, cI) => {
     let coordinates = []
 
     const recurse = (rowIndex, colIndex) => {
       if (
         !coordinates
-          .map(([r, c]) => [r.toString(), c.toString()].join(''))
-          .includes([rowIndex.toString(), colIndex.toString()].join(''))
+          .map(strCoordinates)
+          .includes(strCoordinates([rowIndex, colIndex]))
       )
         coordinates.push([rowIndex, colIndex])
 
-      const rowNeighbors = [
-        ...(colIndex > 0 ? [[rowIndex, colIndex - 1]] : []),
-        ...(colIndex < input[0].length - 1 ? [[rowIndex, colIndex + 1]] : [])
-      ]
-      const columnNeighbors = [
-        ...(rowIndex > 0 ? [[rowIndex - 1, colIndex]] : []),
-        ...(rowIndex < input.length - 1 ? [[rowIndex + 1, colIndex]] : [])
-      ]
-
-      const neighbors = [...rowNeighbors, ...columnNeighbors].filter(
-        ([r, c]) => input[r][c] !== 9 && input[r][c] > input[rowIndex][colIndex]
-      )
+      const neighbors = getNeighbors(rowIndex, colIndex)
 
       if (neighbors.length === 0) {
         return
@@ -59,8 +52,12 @@ const findLowPoints = (fileName, crabCostFn) => {
 
   input.forEach((r, rowIndex) => {
     r.forEach((h, colIndex) => {
-      if (getNeighbors(rowIndex, colIndex).every(n => n > h)) {
-        basinLengths.push(getBasin(rowIndex, colIndex))
+      if (
+        getNeighbors(rowIndex, colIndex).every(
+          ([row, col]) => input[row][col] > h
+        )
+      ) {
+        basinLengths.push(getBasinLengths(rowIndex, colIndex))
       }
     })
   })
@@ -72,7 +69,7 @@ const findLowPoints = (fileName, crabCostFn) => {
 }
 
 const process = (part, expectedSampleAnswer) => {
-  const sampleAnswer = findLowPoints('./day_09/sample_input.txt')
+  const sampleAnswer = findLargesBasins('./day_09/sample_input.txt')
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedSampleAnswer) {
@@ -81,7 +78,10 @@ const process = (part, expectedSampleAnswer) => {
     )
   }
 
-  console.log(`part ${part} real answer`, findLowPoints('./day_09/input.txt'))
+  console.log(
+    `part ${part} real answer`,
+    findLargesBasins('./day_09/input.txt')
+  )
 }
 
 process('B', 1134)
