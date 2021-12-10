@@ -15,15 +15,16 @@ const filterOutPartALines = lines =>
     })
   })
 
-const completionChars = line =>
-  line
-    .reduce((stack, char) => {
-      if (openers.includes(char)) stack.push(char)
-      else stack.pop()
-      return stack
-    }, [])
-    .reverse()
-    .map(c => closers[openers.findIndex(o => o === c)])
+const completionChars = line => {
+  const stack = []
+
+  line.forEach(char => {
+    if (openers.includes(char)) stack.push(char)
+    else stack.pop()
+  })
+
+  return stack.reverse().map(c => closers[openers.findIndex(o => o === c)])
+}
 
 const getScore = char => closers.findIndex(c => c === char) + 1
 
