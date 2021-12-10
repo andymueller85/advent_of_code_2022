@@ -1,16 +1,16 @@
+const openers = ['(', '[', '{', '<']
+const closers = { [')']: 3, [']']: 57, ['}']: 1197, ['>']: 25137 }
+
+const isMatch = (opener, closer) =>
+  openers.findIndex(o => o === opener) ===
+  Object.keys(closers).findIndex(c => c === closer)
+
 const getSyntaxErrorScore = fileName => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n')
     .filter(d => d)
     .map(r => r.split(''))
-
-  const openers = ['(', '[', '{', '<']
-  const closers = { [')']: 3, [']']: 57, ['}']: 1197, ['>']: 25137 }
-
-  const isMatch = (opener, closer) =>
-    openers.findIndex(o => o === opener) ===
-    Object.keys(closers).findIndex(c => c === closer)
 
   return input.reduce((acc, cur) => {
     const stack = []

@@ -1,3 +1,6 @@
+const openers = ['(', '[', '{', '<']
+const closers = [')', ']', '}', '>']
+
 const isMatch = (opener, closer) =>
   openers.findIndex(o => o === opener) === closers.findIndex(c => c === closer)
 
@@ -27,9 +30,6 @@ const getScore = char => closers.findIndex(c => c === char) + 1
 const scoreCompletionString = str =>
   str.reduce((acc, cur) => acc * 5 + getScore(cur), 0)
 
-const openers = ['(', '[', '{', '<']
-const closers = [')', ']', '}', '>']
-
 const getIncompleteRowScore = fileName => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
@@ -37,12 +37,10 @@ const getIncompleteRowScore = fileName => {
     .filter(d => d)
     .map(r => r.split(''))
 
-  const scores = filterOutPartALines(input)
+  return filterOutPartALines(input)
     .map(completionChars)
     .map(scoreCompletionString)
-    .sort((a, b) => a - b)
-
-  return scores[Math.floor(scores.length / 2)]
+    .sort((a, b) => a - b)[Math.floor(this.length / 2)]
 }
 
 const process = (part, expectedSampleAnswer) => {
