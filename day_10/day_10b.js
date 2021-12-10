@@ -1,7 +1,7 @@
 const isMatch = (opener, closer) =>
   openers.findIndex(o => o === opener) === closers.findIndex(c => c === closer)
 
-const getIncompleteLines = lines =>
+const filterOutPartALines = lines =>
   lines.filter(i => {
     const stack = []
     return !i.find(char => {
@@ -28,7 +28,7 @@ const getIncompleteRowScore = (fileName, crabCostFn) => {
     .filter(d => d)
     .map(r => r.split(''))
 
-  const scores = getIncompleteLines(input)
+  const scores = filterOutPartALines(input)
     .map(l => {
       const stack = []
 
