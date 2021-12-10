@@ -1,4 +1,4 @@
-const getSyntaxErrorScore = (fileName, crabCostFn) => {
+const getSyntaxErrorScore = fileName => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n')

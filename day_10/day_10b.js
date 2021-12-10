@@ -21,7 +21,7 @@ const scoreCompletionString = str =>
 const openers = ['(', '[', '{', '<']
 const closers = [')', ']', '}', '>']
 
-const getIncompleteRowScore = (fileName, crabCostFn) => {
+const getIncompleteRowScore = fileName => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n')
