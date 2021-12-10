@@ -6,24 +6,11 @@ const getSyntaxErrorScore = fileName => {
     .map(r => r.split(''))
 
   const openers = ['(', '[', '{', '<']
-  const closers = [')', ']', '}', '>']
+  const closers = { [')']: 3, [']']: 57, ['}']: 1197, ['>']: 25137 }
 
   const isMatch = (opener, closer) =>
     openers.findIndex(o => o === opener) ===
-    closers.findIndex(c => c === closer)
-
-  const getScore = char => {
-    switch (char) {
-      case ')':
-        return 3
-      case ']':
-        return 57
-      case '}':
-        return 1197
-      case '>':
-        return 25137
-    }
-  }
+    Object.keys(closers).findIndex(c => c === closer)
 
   return input.reduce((acc, cur) => {
     const stack = []
@@ -34,7 +21,7 @@ const getSyntaxErrorScore = fileName => {
       stack.push(char)
     })
 
-    return acc + (invalid ? getScore(invalid) : 0)
+    return acc + (invalid ? closers[invalid] : 0)
   }, 0)
 }
 
