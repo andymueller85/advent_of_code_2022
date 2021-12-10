@@ -38,10 +38,12 @@ const getIncompleteRowScore = fileName => {
     .filter(d => d)
     .map(r => r.split(''))
 
-  return filterOutPartALines(input)
+  const scores = filterOutPartALines(input)
     .map(completionChars)
     .map(scoreCompletionString)
-    .sort((a, b) => a - b)[Math.floor(this.length / 2)]
+    .sort((a, b) => a - b)
+
+  return scores[Math.floor(scores.length / 2)]
 }
 
 const process = (part, expectedSampleAnswer) => {
