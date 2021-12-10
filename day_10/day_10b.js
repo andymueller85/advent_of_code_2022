@@ -5,13 +5,28 @@ const filterOutPartALines = lines =>
   lines.filter(i => {
     const stack = []
     return !i.find(char => {
-      if (openers.includes(char)) {
-        stack.push(char)
-      } else {
+      if (!openers.includes(char)) {
         return !isMatch(stack.pop(), char)
       }
+      stack.push(char)
     })
   })
+
+const completionString = line => {
+  const stack = []
+
+  line.forEach(char => {
+    if (openers.includes(char)) {
+      stack.push(char)
+    } else {
+      stack.pop()
+    }
+  })
+
+  return stack
+    .reverse()
+    .reduce((acc, cur) => acc + closers[openers.findIndex(o => o === cur)], '')
+}
 
 const getScore = char => closers.findIndex(c => c === char) + 1
 
@@ -29,24 +44,7 @@ const getIncompleteRowScore = fileName => {
     .map(r => r.split(''))
 
   const scores = filterOutPartALines(input)
-    .map(l => {
-      const stack = []
-
-      l.forEach(char => {
-        if (openers.includes(char)) {
-          stack.push(char)
-        } else {
-          stack.pop()
-        }
-      })
-
-      return stack
-        .reverse()
-        .reduce(
-          (acc, cur) => acc + closers[openers.findIndex(o => o === cur)],
-          ''
-        )
-    })
+    .map(completionString)
     .map(scoreCompletionString)
     .sort((a, b) => a - b)
 

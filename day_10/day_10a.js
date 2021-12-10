@@ -28,11 +28,10 @@ const getSyntaxErrorScore = fileName => {
   return input.reduce((acc, cur) => {
     const stack = []
     const invalid = cur.find(char => {
-      if (openers.includes(char)) {
-        stack.push(char)
-      } else {
+      if (!openers.includes(char)) {
         return !isMatch(stack.pop(), char)
       }
+      stack.push(char)
     })
 
     return acc + (invalid ? getScore(invalid) : 0)
