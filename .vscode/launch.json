@@ -134,9 +134,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Day 11a",
+      "name": "Day 11",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/day_11/day_11a.mjs"
+      "program": "${workspaceFolder}/day_11/day_11.mjs"
     }
   ]
 }
