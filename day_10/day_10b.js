@@ -8,7 +8,7 @@ const filterOutPartALines = lines =>
   lines.filter(i => {
     const stack = []
     return !i.find(char => {
-      if (!openers.includes(char)) {
+      if (closers.includes(char)) {
         return !isMatch(stack.pop(), char)
       }
       stack.push(char)

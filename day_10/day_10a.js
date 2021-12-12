@@ -15,7 +15,7 @@ const getSyntaxErrorScore = fileName => {
   return input.reduce((acc, cur) => {
     const stack = []
     const invalid = cur.find(char => {
-      if (!openers.includes(char)) {
+      if (Object.keys(closers).includes(char)) {
         return !isMatch(stack.pop(), char)
       }
       stack.push(char)

@@ -130,6 +130,13 @@
       "name": "Day 10b",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/day_10/day_10b.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Day 11a",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/day_11/day_11a.mjs"
     }
   ]
 }
