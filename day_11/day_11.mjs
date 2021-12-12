@@ -26,20 +26,16 @@ class Octopus {
   }
 
   get neighbors() {
-    let neighbors = [
-      [this._row - 1, this._col - 1],
-      [this._row - 1, this._col],
-      [this._row - 1, this._col + 1],
-      [this._row, this._col - 1],
-      [this._row, this._col + 1],
-      [this._row + 1, this._col - 1],
-      [this._row + 1, this._col],
-      [this._row + 1, this._col + 1]
-    ]
+    const arr = Array.from({ length: 3 }, (_, i) => i - 1)
 
-    return neighbors.filter(
-      ([r, c]) => r > -1 && r < ROW_LENGTH && c > -1 && c < ROW_LENGTH
-    )
+    return arr
+      .map(r =>
+        arr
+          .map(c => [this._row + r, this._col + c])
+          .filter(([row, col]) => !(this._row === row && this._col === col))
+      )
+      .flat()
+      .filter(([r, c]) => r > -1 && r < ROW_LENGTH && c > -1 && c < ROW_LENGTH)
   }
 
   reset() {
@@ -68,7 +64,7 @@ const increaseEnergy = (octopus, octoGrid) => {
   }
 }
 
-const getFlashCount = octoGrid => {
+const octoStep = octoGrid => {
   octoGrid.flat().forEach(o => increaseEnergy(o, octoGrid))
 
   return octoGrid.flat().filter(o => o.flashed).length
@@ -78,7 +74,7 @@ const energizeOctopuses = fileName => {
   const octoGrid = processInput(fileName)
 
   return Array.from({ length: 100 }).reduce(acc => {
-    const flashCount = getFlashCount(octoGrid)
+    const flashCount = octoStep(octoGrid)
 
     octoGrid.flat().forEach(o => o.reset())
 
@@ -90,7 +86,7 @@ const findOctoSynchronizationIndex = fileName => {
   const octoGrid = processInput(fileName)
   let step = 1
 
-  while (getFlashCount(octoGrid) !== octoGrid.flat().length) {
+  while (octoStep(octoGrid) !== octoGrid.flat().length) {
     octoGrid.flat().forEach(o => o.reset())
     step++
   }
