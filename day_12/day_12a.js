@@ -18,18 +18,14 @@ const getPaths = fileName => {
     }
   }
 
-  const caveConnections = input.reduce((acc, [pointA, pointB]) => {
-    const keys = Object.keys(acc)
-    let accHolder = { ...acc }
-    if (!keys.includes(pointA)) {
-      accHolder = mapConnections(accHolder, pointA)
-    }
-    if (!keys.includes(pointB)) {
-      accHolder = mapConnections(accHolder, pointB)
-    }
-
-    return accHolder
-  }, {})
+  const caveConnections = input.reduce(
+    (acc, [pointA, pointB]) => ({
+      ...acc,
+      ...mapConnections(acc, pointA),
+      ...mapConnections(acc, pointB)
+    }),
+    {}
+  )
 
   const isVisitedSmallCave = (cave, path) =>
     smallCaves.includes(cave) && path.includes(cave)

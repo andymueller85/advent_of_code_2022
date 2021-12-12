@@ -18,29 +18,19 @@ const getPaths = fileName => {
     }
   }
 
-  const caveConnections = input.reduce((acc, [pointA, pointB]) => {
-    const keys = Object.keys(acc)
-    let accHolder = { ...acc }
-    if (!keys.includes(pointA)) {
-      accHolder = mapConnections(accHolder, pointA)
-    }
-    if (!keys.includes(pointB)) {
-      accHolder = mapConnections(accHolder, pointB)
-    }
+  const caveConnections = input.reduce(
+    (acc, [pointA, pointB]) => ({
+      ...acc,
+      ...mapConnections(acc, pointA),
+      ...mapConnections(acc, pointB)
+    }),
+    {}
+  )
 
-    return accHolder
-  }, {})
-
-  const visitCave = (myVisitedSmallCaves, cave) => {
-    if (smallCaves.includes(cave)) {
-      return {
-        ...myVisitedSmallCaves,
-        [cave]: myVisitedSmallCaves[cave] + 1
-      }
-    }
-
-    return myVisitedSmallCaves
-  }
+  const visitCave = (visited, cave) =>
+    smallCaves.includes(cave)
+      ? { ...visited, [cave]: visited[cave] + 1 }
+      : visited
 
   const smallCaves = Object.keys(caveConnections).filter(
     k => k !== 'end' && k === k.toLowerCase()
@@ -51,34 +41,25 @@ const getPaths = fileName => {
     {}
   )
 
-  const allSmallCavesVisitedAtMostOnce = myVisitedSmallCaves =>
-    Object.keys(myVisitedSmallCaves).every(k => myVisitedSmallCaves[k] < 2)
+  const shouldRecurse = (currentPosition, visited) =>
+    !smallCaves.includes(currentPosition) ||
+    visited[currentPosition] === 0 ||
+    Object.keys(visited).every(k => visited[k] < 2)
 
   const traverseMap = () => {
     let paths = 0
 
     const recurse = (
       currentPosition = 'start',
-      path = [],
-      myVisitedSmallCaves = initialVisitedSmallCaves
+      visited = initialVisitedSmallCaves
     ) => {
       if (currentPosition === 'end') {
         paths++
       } else {
-        if (
-          !smallCaves.includes(currentPosition) ||
-          myVisitedSmallCaves[currentPosition] === 0 ||
-          allSmallCavesVisitedAtMostOnce(myVisitedSmallCaves)
-        ) {
+        if (shouldRecurse(currentPosition, visited)) {
           caveConnections[currentPosition]
             .filter(c => c !== 'start')
-            .forEach(c => {
-              recurse(
-                c,
-                [...path, currentPosition],
-                visitCave(myVisitedSmallCaves, currentPosition)
-              )
-            })
+            .forEach(c => recurse(c, visitCave(visited, currentPosition)))
         }
       }
     }
