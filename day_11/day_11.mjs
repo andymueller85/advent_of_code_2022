@@ -29,12 +29,11 @@ class Octopus {
     const arr = Array.from({ length: 3 }, (_, i) => i - 1)
 
     return arr
-      .map(r =>
+      .flatMap(r =>
         arr
           .map(c => [this._row + r, this._col + c])
           .filter(([row, col]) => !(this._row === row && this._col === col))
       )
-      .flat()
       .filter(([r, c]) => r > -1 && r < ROW_LENGTH && c > -1 && c < ROW_LENGTH)
   }
 
