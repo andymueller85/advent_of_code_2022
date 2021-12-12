@@ -38,17 +38,13 @@ class Octopus {
 
     return neighbors.filter(([r, c]) => r > -1 && r < 10 && c > -1 && c < 10)
   }
-
-  increaseEnergy() {
-    this._energyLevel++
-  }
 }
 
 const energizeNeighbors = (octopus, octoGrid) => {
   octopus.neighbors.forEach(([r, c]) => {
     const octoNeighbor = octoGrid[r][c]
 
-    octoNeighbor.increaseEnergy()
+    octoNeighbor.energyLevel++
 
     if (
       !octoNeighbor.flashed &&
@@ -64,7 +60,7 @@ const getFlashCount = octoGrid => {
   const flatOctoGrid = octoGrid.flat()
 
   flatOctoGrid.forEach(o => {
-    o.increaseEnergy()
+    o.energyLevel++
   })
 
   flatOctoGrid.forEach(o => {
