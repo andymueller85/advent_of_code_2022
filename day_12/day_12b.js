@@ -5,18 +5,12 @@ const getPaths = fileName => {
     .filter(d => d)
     .map(r => r.split('-'))
 
-  const mapConnections = (connectionMap, point) => {
-    const connectionsThatIncludePoint = input.filter(([a, b]) =>
-      [a, b].includes(point)
-    )
-
-    return {
-      ...connectionMap,
-      [point]: connectionsThatIncludePoint.map(([a, b]) =>
-        a === point ? b : a
-      )
-    }
-  }
+  const mapConnections = (connectionMap, point) => ({
+    ...connectionMap,
+    [point]: input
+      .filter(([a, b]) => [a, b].includes(point))
+      .map(([a, b]) => (a === point ? b : a))
+  })
 
   const caveConnections = input.reduce(
     (acc, [pointA, pointB]) => ({
