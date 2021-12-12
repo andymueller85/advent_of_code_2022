@@ -31,25 +31,53 @@ const getPaths = fileName => {
     return accHolder
   }, {})
 
-  const isVisitedSmallCave = (cave, path) =>
-    smallCaves.includes(cave) && path.includes(cave)
+  const visitCave = (myVisitedSmallCaves, cave) => {
+    if (smallCaves.includes(cave)) {
+      return {
+        ...myVisitedSmallCaves,
+        [cave]: myVisitedSmallCaves[cave] + 1
+      }
+    }
+
+    return myVisitedSmallCaves
+  }
 
   const smallCaves = Object.keys(caveConnections).filter(
     k => k !== 'end' && k === k.toLowerCase()
   )
 
+  const initialVisitedSmallCaves = smallCaves.reduce(
+    (acc, cur) => ({ ...acc, [cur]: 0 }),
+    {}
+  )
+
+  const allSmallCavesVisitedAtMostOnce = myVisitedSmallCaves =>
+    Object.keys(myVisitedSmallCaves).every(k => myVisitedSmallCaves[k] < 2)
+
   const traverseMap = () => {
     let paths = 0
 
-    const recurse = (currentPosition = 'start', path = []) => {
+    const recurse = (
+      currentPosition = 'start',
+      path = [],
+      myVisitedSmallCaves = initialVisitedSmallCaves
+    ) => {
       if (currentPosition === 'end') {
         paths++
       } else {
-        if (!isVisitedSmallCave(currentPosition, path)) {
+        if (
+          !smallCaves.includes(currentPosition) ||
+          myVisitedSmallCaves[currentPosition] === 0 ||
+          allSmallCavesVisitedAtMostOnce(myVisitedSmallCaves)
+        ) {
           caveConnections[currentPosition]
             .filter(c => c !== 'start')
             .forEach(c => {
-              recurse(c, [...path, currentPosition])
+              recurse(
+                c,
+                [...path, currentPosition],
+                visitCave(myVisitedSmallCaves, currentPosition)
+              )
             })
         }
       }
@@ -75,4 +103,4 @@ const process = (part, expectedSampleAnswer) => {
   console.log(`part ${part} real answer`, getPaths('./day_12/input.txt'))
 }
 
-process('A', 226)
+process('B', 3509)
