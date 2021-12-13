@@ -18,7 +18,28 @@ const foldHorizontal = (paper, foldIndex) => {
     .reverse()
 }
 
-const foldManual = fileName => {
+const partAFolder = (paper, instructions) =>
+  [instructions[0]].reduce((acc, [axis, foldIndex]) => {
+    const foldedPaper =
+      axis === 'y'
+        ? foldHorizontal(paper, foldIndex)
+        : swapXY(foldHorizontal(swapXY(paper), foldIndex))
+
+    return acc + foldedPaper.flat().filter(d => d === '#').length
+  }, 0)
+
+const partBFolder = (paper, instructions) => {
+  let currentPaper = [...paper]
+  instructions.forEach(([axis, foldIndex]) => {
+    currentPaper =
+      axis === 'y'
+        ? foldHorizontal(currentPaper, foldIndex)
+        : swapXY(foldHorizontal(swapXY(currentPaper), foldIndex))
+  }, 0)
+  return currentPaper
+}
+
+const foldManual = (fileName, folderFn) => {
   const [rawDots, rawInstructions] = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n\n')
@@ -43,24 +64,21 @@ const foldManual = fileName => {
     .map(d => d.split('='))
     .map(([axis, val]) => [axis.charAt(axis.length - 1), parseInt(val, 10)])
 
-  let currentPaper = [...paper]
-
-  instructions.forEach(([axis, foldIndex]) => {
-    currentPaper =
-      axis === 'y'
-        ? foldHorizontal(currentPaper, foldIndex)
-        : swapXY(foldHorizontal(swapXY(currentPaper), foldIndex))
-  }, 0)
-
-  return currentPaper
+  return folderFn(paper, instructions)
 }
 
-const process = (part, expectedSampleAnswer) => {
-  const sampleAnswer = foldManual('./day_13/sample_input.txt')
+const process = (part, fn) => {
+  const log = (answer, answerType) => {
+    if (part === 'A') {
+      console.log(`part ${part} ${answerType} answer`, answer)
+    } else {
+      answer.forEach((a, i) => console.log(a.join('') + ' ' + i))
+    }
+  }
 
-  // can't really verify / show output here. just set a breakpoint on `return currentPaper`
-  console.log(`part ${part} sample answer`, sampleAnswer)
-  console.log(`part ${part} real answer`, foldManual('./day_13/input.txt'))
+  log(foldManual('./day_13/sample_input.txt', fn), 'sample')
+  log(foldManual('./day_13/input.txt', fn), 'real')
 }
 
-process('B', 17)
+process('A', partAFolder)
+process('B', partBFolder)
