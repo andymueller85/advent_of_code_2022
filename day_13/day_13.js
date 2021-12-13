@@ -45,11 +45,9 @@ const foldManual = (fileName, folderFn) => {
     .filter(d => d)
     .map(d => d.split(',').map(c => parseInt(c, 10)))
 
-  const maxX = Math.max(...dots.map(d => d[0])) + 1
-  const maxY = Math.max(...dots.map(d => d[1])) + 1
-
-  const paper = Array.from({ length: maxY }, (_, rIdx) =>
-    Array.from({ length: maxX }, (__, cIdx) =>
+  const max = i => Math.max(...dots.map(d => d[i])) + 1
+  const paper = Array.from({ length: max(1) }, (_, rIdx) =>
+    Array.from({ length: max(0) }, (__, cIdx) =>
       dots.find(([c, r]) => c === cIdx && r === rIdx) ? '#' : '.'
     )
   )
