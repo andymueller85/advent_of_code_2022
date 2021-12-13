@@ -30,11 +30,6 @@ const getPaths = fileName => {
     k => k !== 'end' && k === k.toLowerCase()
   )
 
-  const initialVisited = smallCaves.reduce(
-    (acc, cur) => ({ ...acc, [cur]: 0 }),
-    {}
-  )
-
   const shouldRecurse = (currentPosition, visited) =>
     !smallCaves.includes(currentPosition) ||
     visited[currentPosition] === 0 ||
@@ -43,7 +38,10 @@ const getPaths = fileName => {
   const traverseMap = () => {
     let paths = 0
 
-    const recurse = (currentPosition = 'start', visited = initialVisited) => {
+    const recurse = (
+      currentPosition = 'start',
+      visited = smallCaves.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
+    ) => {
       if (currentPosition === 'end') {
         paths++
       } else if (shouldRecurse(currentPosition, visited)) {
