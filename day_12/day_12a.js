@@ -40,14 +40,12 @@ const getPaths = fileName => {
     const recurse = (currentPosition = 'start', path = []) => {
       if (currentPosition === 'end') {
         paths++
-      } else {
-        if (!isVisitedSmallCave(currentPosition, path)) {
-          caveConnections[currentPosition]
-            .filter(c => c !== 'start')
-            .forEach(c => {
-              recurse(c, [...path, currentPosition])
-            })
-        }
+      } else if (!isVisitedSmallCave(currentPosition, path)) {
+        caveConnections[currentPosition]
+          .filter(c => c !== 'start')
+          .forEach(c => {
+            recurse(c, [...path, currentPosition])
+          })
       }
     }
 

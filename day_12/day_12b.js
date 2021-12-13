@@ -8,7 +8,7 @@ const getPaths = fileName => {
   const mapConnections = (connectionMap, point) => ({
     ...connectionMap,
     [point]: input
-      .filter(([a, b]) => [a, b].includes(point))
+      .filter(i => i.includes(point))
       .map(([a, b]) => (a === point ? b : a))
   })
 
@@ -30,7 +30,7 @@ const getPaths = fileName => {
     k => k !== 'end' && k === k.toLowerCase()
   )
 
-  const initialVisitedSmallCaves = smallCaves.reduce(
+  const initialVisited = smallCaves.reduce(
     (acc, cur) => ({ ...acc, [cur]: 0 }),
     {}
   )
@@ -43,18 +43,13 @@ const getPaths = fileName => {
   const traverseMap = () => {
     let paths = 0
 
-    const recurse = (
-      currentPosition = 'start',
-      visited = initialVisitedSmallCaves
-    ) => {
+    const recurse = (currentPosition = 'start', visited = initialVisited) => {
       if (currentPosition === 'end') {
         paths++
-      } else {
-        if (shouldRecurse(currentPosition, visited)) {
-          caveConnections[currentPosition]
-            .filter(c => c !== 'start')
-            .forEach(c => recurse(c, visitCave(visited, currentPosition)))
-        }
+      } else if (shouldRecurse(currentPosition, visited)) {
+        caveConnections[currentPosition]
+          .filter(c => c !== 'start')
+          .forEach(c => recurse(c, visitCave(visited, currentPosition)))
       }
     }
 
