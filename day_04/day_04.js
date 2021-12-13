@@ -5,7 +5,7 @@ const input = require('fs')
 const bingoNumbers = input[0].split(',')
 const boards = input.slice(1).map(b =>
   b
-    .split('\n')
+    .split(/\r?\n/)
     .map(r =>
       r
         .split(' ')

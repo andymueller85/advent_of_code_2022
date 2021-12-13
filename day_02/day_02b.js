@@ -1,6 +1,6 @@
 const input = require('fs')
   .readFileSync('./day_02/input.txt', 'utf8')
-  .split('\n')
+  .split(/\r?\n/)
   .filter(d => d)
   .map(d => d.split(' '))
   .map(([command, value]) => ({ command, value: parseInt(value, 10) }))

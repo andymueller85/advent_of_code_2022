@@ -8,7 +8,7 @@ const isMatch = (opener, closer) =>
 const getSyntaxErrorScore = fileName => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
-    .split('\n')
+    .split(/\r?\n/)
     .filter(d => d)
     .map(r => r.split(''))
 

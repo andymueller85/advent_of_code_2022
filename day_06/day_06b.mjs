@@ -1,7 +1,10 @@
 import * as fs from 'fs'
 
 export const spawnFishies = (fileName, days) => {
-  const input = fs.readFileSync(fileName, 'utf8').replace('\n', '').split(',')
+  const input = fs
+    .readFileSync(fileName, 'utf8')
+    .replace(/\r?\n/, '')
+    .split(',')
   const fishies = Array.from(
     { length: 9 },
     (_, i) => input.filter(f => f === i.toString()).length

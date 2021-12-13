@@ -1,7 +1,7 @@
 const mapHydrothermalVents = (fileName, gridSize, includeDiagonals) => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
-    .split('\n')
+    .split(/\r?\n/)
     .filter(d => d)
     
   const newArray = (length, mapFn = (_, i) => i) =>

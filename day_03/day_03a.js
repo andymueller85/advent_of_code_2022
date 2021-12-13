@@ -1,6 +1,6 @@
 const input = require('fs')
   .readFileSync('./day_03/input.txt', 'utf8')
-  .split('\n')
+  .split(/\r?\n/)
   .filter(d => d)
 
 const gammaRate = Array.from({ length: input[0].length }).reduce(

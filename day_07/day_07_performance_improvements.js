@@ -1,7 +1,7 @@
 const alignCrabs = (fileName, crabCostFn) => {
   const input = require('fs')
     .readFileSync(fileName, 'utf8')
-    .replace('\n', '')
+    .replace(/\r?\n/, '')
     .split(',')
     .map(n => parseInt(n, 10))
     .sort((a, b) => a - b)

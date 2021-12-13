@@ -46,7 +46,7 @@ class Octopus {
 const processInput = fileName =>
   fs
     .readFileSync(fileName, 'utf8')
-    .split('\n')
+    .split(/\r?\n/)
     .filter(d => d)
     .map((r, rIdx) =>
       r.split('').map((o, cIdx) => new Octopus(parseInt(o, 10), rIdx, cIdx))
