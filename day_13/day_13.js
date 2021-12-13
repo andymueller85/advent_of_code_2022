@@ -28,16 +28,12 @@ const partAFolder = (paper, instructions) =>
     return acc + foldedPaper.flat().filter(d => d === '#').length
   }, 0)
 
-const partBFolder = (paper, instructions) => {
-  let currentPaper = [...paper]
-  instructions.forEach(([axis, foldIndex]) => {
-    currentPaper =
-      axis === 'y'
-        ? foldHorizontal(currentPaper, foldIndex)
-        : swapXY(foldHorizontal(swapXY(currentPaper), foldIndex))
-  }, 0)
-  return currentPaper
-}
+const partBFolder = (paper, instructions) =>
+  instructions.reduce((acc, [axis, foldIndex]) => {
+    return axis === 'y'
+      ? foldHorizontal(acc, foldIndex)
+      : swapXY(foldHorizontal(swapXY(acc), foldIndex))
+  }, paper)
 
 const foldManual = (fileName, folderFn) => {
   const [rawDots, rawInstructions] = require('fs')
