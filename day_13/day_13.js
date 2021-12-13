@@ -2,8 +2,7 @@ const swapXY = paper =>
   paper[0].map((_, colIndex) => paper.map(row => row[colIndex]))
 
 const foldHorizontal = (paper, foldIndex) => {
-  const topIsLarger = foldIndex > paper.length / 2
-  const adjustedPaper = topIsLarger ? paper : paper.reverse()
+  const adjustedPaper = foldIndex > paper.length / 2 ? paper : paper.reverse()
   const top = adjustedPaper.slice(0, foldIndex)
   const bottom = adjustedPaper.slice(foldIndex + 1)
 
@@ -35,7 +34,7 @@ const partBFolder = (paper, instructions) =>
       : swapXY(foldHorizontal(swapXY(acc), foldIndex))
   }, paper)
 
-const foldManual = (fileName, folderFn) => {
+const foldPaper = (fileName, folderFn) => {
   const [rawDots, rawInstructions] = require('fs')
     .readFileSync(fileName, 'utf8')
     .split('\n\n')
@@ -48,7 +47,7 @@ const foldManual = (fileName, folderFn) => {
   const max = i => Math.max(...dots.map(d => d[i])) + 1
   const paper = Array.from({ length: max(1) }, (_, rIdx) =>
     Array.from({ length: max(0) }, (__, cIdx) =>
-      dots.find(([c, r]) => c === cIdx && r === rIdx) ? '#' : '.'
+      dots.some(([c, r]) => c === cIdx && r === rIdx) ? '#' : '.'
     )
   )
 
@@ -66,12 +65,12 @@ const process = (part, fn) => {
     if (part === 'A') {
       console.log(`part ${part} ${answerType} answer`, answer)
     } else {
-      answer.forEach((a, i) => console.log(a.join('') + ' ' + i))
+      answer.forEach((a, i) => console.log(`${a.join('')} ${i}`))
     }
   }
 
-  log(foldManual('./day_13/sample_input.txt', fn), 'sample')
-  log(foldManual('./day_13/input.txt', fn), 'real')
+  log(foldPaper('./day_13/sample_input.txt', fn), 'sample')
+  log(foldPaper('./day_13/input.txt', fn), 'real')
 }
 
 process('A', partAFolder)
