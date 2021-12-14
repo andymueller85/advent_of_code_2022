@@ -45,11 +45,10 @@ const foldPaper = (fileName, folderFn) => {
     .map(d => d.split(',').map(c => parseInt(c, 10)))
 
   const max = i => Math.max(...dots.map(d => d[i])) + 1
-  const paper = Array.from({ length: max(1) }, (_, rIdx) =>
-    Array.from({ length: max(0) }, (__, cIdx) =>
-      dots.some(([c, r]) => c === cIdx && r === rIdx) ? '#' : '.'
-    )
+  const paper = Array.from({ length: max(1) }, () =>
+    Array.from({ length: max(0) }, () => '.')
   )
+  dots.forEach(([col, row]) => (paper[row][col] = '#'))
 
   const instructions = rawInstructions
     .split(/\r?\n/)
