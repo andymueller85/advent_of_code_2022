@@ -19,7 +19,7 @@ const polymerize = (fileName, days) => {
   )
 
   // object that has an entry for every rule and the count of times it appears in the string
-  let rulesWithCounts = rules.reduce(
+  let ruleMap = rules.reduce(
     (acc, [pair]) => ({
       ...acc,
       [pair]: template.filter((t, i) => [t, template[i + 1]].join('') === pair)
@@ -30,43 +30,35 @@ const polymerize = (fileName, days) => {
 
   // for each iteration, apply the rule. if it creates a new instance of a rule, increase the count.
   Array.from({ length: days }).forEach(() => {
-    let todayCharCounts = {}
-    let newRulesWithCounts = pairs.reduce(
-      (acc, cur) => ({
-        ...acc,
-        [cur]: 0
-      }),
-      {}
-    )
+    let dayCharCounts = {}
+    let newRuleMap = pairs.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
 
-    rules.forEach(([pair, charToInsert]) => {
-      const pairOccurances = rulesWithCounts[pair]
+    rules.forEach(([pair, char]) => {
+      const pairOccurances = ruleMap[pair]
 
-      todayCharCounts = {
-        ...todayCharCounts,
-        [charToInsert]: todayCharCounts[charToInsert]
-          ? todayCharCounts[charToInsert] + pairOccurances
+      dayCharCounts = {
+        ...dayCharCounts,
+        [char]: dayCharCounts[char]
+          ? dayCharCounts[char] + pairOccurances
           : pairOccurances
       }
 
       const [a, b] = pair.split('')
 
-      if (pairOccurances > 0 && pairs.includes(a + charToInsert)) {
-        newRulesWithCounts[a + charToInsert] += pairOccurances
+      const updateRuleMap = c => {
+        newRuleMap[c] += pairs.includes(c) ? pairOccurances : 0
       }
-      if (pairOccurances > 0 && pairs.includes(charToInsert + b)) {
-        newRulesWithCounts[charToInsert + b] += pairOccurances
-      }
+
+      updateRuleMap(a + char)
+      updateRuleMap(char + b)
     })
 
-    charCounts = Object.entries(todayCharCounts).reduce(
-      (acc, [char, count]) =>
-        // if key is already in map1, add the values, otherwise, create new pair
-        ({ ...acc, [char]: (acc[char] || 0) + count }),
-      { ...charCounts }
+    charCounts = Object.entries(dayCharCounts).reduce(
+      (acc, [char, count]) => ({ ...acc, [char]: (acc[char] || 0) + count }),
+      charCounts
     )
 
-    rulesWithCounts = newRulesWithCounts
+    ruleMap = newRuleMap
   })
 
   return (
