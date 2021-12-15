@@ -22,8 +22,7 @@ const polymerize = (fileName, days) => {
   let ruleMap = rules.reduce(
     (acc, [pair]) => ({
       ...acc,
-      [pair]: template.filter((t, i) => [t, template[i + 1]].join('') === pair)
-        .length
+      [pair]: template.filter((t, i) => t + template[i + 1] === pair).length
     }),
     {}
   )
