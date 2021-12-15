@@ -30,8 +30,8 @@ const polymerize = (fileName, days) => {
 
   // for each iteration, apply the rule. if it creates a new instance of a rule, increase the count.
   Array.from({ length: days }).forEach(() => {
-    let dayCharCounts = {}
-    let newRuleMap = pairs.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
+    const dayCharCounts = {}
+    const newRuleMap = pairs.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
 
     rules.forEach(([pair, char]) => {
       dayCharCounts[char] = (dayCharCounts[char] ?? 0) + ruleMap[pair]
