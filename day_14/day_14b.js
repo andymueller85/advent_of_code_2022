@@ -34,37 +34,21 @@ const polymerize = (fileName, days) => {
     let newRuleMap = pairs.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
 
     rules.forEach(([pair, char]) => {
-      const pairOccurances = ruleMap[pair]
-
-      dayCharCounts = {
-        ...dayCharCounts,
-        [char]: dayCharCounts[char]
-          ? dayCharCounts[char] + pairOccurances
-          : pairOccurances
-      }
-
-      const [a, b] = pair.split('')
-
-      const updateRuleMap = c => {
-        newRuleMap[c] += pairs.includes(c) ? pairOccurances : 0
-      }
-
-      updateRuleMap(a + char)
-      updateRuleMap(char + b)
+      dayCharCounts[char] = (dayCharCounts[char] ?? 0) + ruleMap[pair]
+      newRuleMap[pair[0] + char] += ruleMap[pair]
+      newRuleMap[char + pair[1]] += ruleMap[pair]
     })
 
     charCounts = Object.entries(dayCharCounts).reduce(
-      (acc, [char, count]) => ({ ...acc, [char]: (acc[char] || 0) + count }),
+      (acc, [char, count]) => ({ ...acc, [char]: (acc[char] ?? 0) + count }),
       charCounts
     )
 
     ruleMap = newRuleMap
   })
 
-  return (
-    Math.max(...Object.values(charCounts)) -
-    Math.min(...Object.values(charCounts))
-  )
+  const vals = Object.values(charCounts)
+  return Math.max(...vals) - Math.min(...vals)
 }
 
 const process = (part, expectedSampleAnswer, days) => {
