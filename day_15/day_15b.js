@@ -1,35 +1,50 @@
 const findSafestPath = fileName => {
-  const grid = require('fs')
+  const startingGrid = require('fs')
     .readFileSync(fileName, 'utf8')
-    .replace(/\r/g, '')
-    .split(/\r?\n/)
+    .replace(/\r/g, '') // remove all \r characters to avoid issues on Windows
+    .split('\n')
     .filter(d => d)
     .map(r => r.split('').map(c => parseInt(c, 10)))
 
+  const tiles = Array.from({ length: 9 }).map((_, i) =>
+    startingGrid.map(r => r.map(c => (c + i > 9 ? c + i - 9 : c + i)))
+  )
+
+  const grid = Array.from({ length: 5 }, (_, j) => j).reduce(
+    (outerAcc, outerCur) => [
+      ...outerAcc,
+      ...Array.from({ length: 4 }, (_, i) => i + outerCur + 1).reduce(
+        (acc, cur) => acc.map((r, i) => r.concat(...tiles[cur][i])),
+        tiles[outerCur]
+      )
+    ],
+    []
+  )
   const GRID_WIDTH = grid.length
   const GRID_HEIGHT = grid[0].length
 
-  const stringify = (rowIndex, colIndex) =>
-    `${rowIndex.toString()}-${colIndex.toString()}`
+  const stringify = (rowIndex, colIndex) => `${rowIndex}-${colIndex}`
   const graph = {}
 
   const getNeighbors = ([r, c]) => {
     const candidates = [
       [r, c + 1],
-      [r + 1, c]
+      [r, c - 1],
+      [r + 1, c],
+      [r - 1, c]
     ]
 
-    const retArr = candidates.filter(
-      ([nR, nC]) => nR > -1 && nC > -1 && nR < GRID_WIDTH && nC < GRID_HEIGHT
-    )
-
-    return retArr.reduce(
-      (acc, [fR, fC]) => ({
-        ...acc,
-        [stringify(fR, fC)]: grid[fR][fC]
-      }),
-      {}
-    )
+    return candidates
+      .filter(
+        ([nR, nC]) => nR > -1 && nC > -1 && nR < GRID_WIDTH && nC < GRID_HEIGHT
+      )
+      .reduce(
+        (acc, [fR, fC]) => ({
+          ...acc,
+          [stringify(fR, fC)]: grid[fR][fC]
+        }),
+        {}
+      )
   }
 
   grid.forEach((r, rIdx) =>
@@ -86,11 +101,8 @@ const findSafestPath = fileName => {
       node = shortestDistanceNode(distances, visited)
     }
 
-    let shortestPath = [endKey]
     let parent = parents[endKey]
-
     while (parent) {
-      shortestPath.push(parent)
       parent = parents[parent]
     }
 
@@ -113,4 +125,4 @@ const process = (part, expectedSampleAnswer) => {
   console.log(`part ${part} real answer`, findSafestPath('./day_15/input.txt'))
 }
 
-process('A', 40)
+process('B', 315)
