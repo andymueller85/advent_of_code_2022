@@ -63,7 +63,7 @@ const getTrajectories = fileName => {
         // might have to try some more y values here - could be multiple hits for the same y
         overallMaxHeight = Math.max(overallMaxHeight, result.maxPosition)
       } else {
-        if (result.finalX < target.minX) {
+        if (result.finalY < target.minY) {
           shotMinX = middle + 1
         } else {
           shotMaxX = middle - 1
