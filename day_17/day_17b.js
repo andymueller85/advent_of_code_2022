@@ -49,21 +49,25 @@ const getTrajectories = fileName => {
     }
   }
 
-  let overallMaxHeight = 0
+  let hitCount = 0
 
-  for (let y = 200; y > 0; y--) {
-    let shotMinX = 0
-    let shotMaxX = 200
+  // +-300 is arbitrary, and enough for this dataset. could probably be smarter.
+  for (let y = -300; y < 300; y++) {
+    let shotMinX = -300
+    let shotMaxX = 300
     let result = fireShot({ x: shotMaxX, y })
 
     while (shotMinX < shotMaxX && !result.hit) {
       const middle = Math.floor((shotMinX + shotMaxX) / 2)
       result = fireShot({ x: middle, y })
       if (result.hit) {
-        // might have to try some more y values here - could be multiple hits for the same y
-        overallMaxHeight = Math.max(overallMaxHeight, result.maxPosition)
+        // this is a very naive solution. If we have a hit try all the x's
+        // around it - +-20 is a high enough range for this dataset
+        for (let x = middle - 20; x < middle + 20; x++) {
+          hitCount += fireShot({ x, y }).hit
+        }
       } else {
-        if (result.finalX < target.minX) {
+        if (result.finalY < target.minY) {
           shotMinX = middle + 1
         } else {
           shotMaxX = middle - 1
@@ -72,7 +76,7 @@ const getTrajectories = fileName => {
     }
   }
 
-  return overallMaxHeight
+  return hitCount
 }
 
 const process = (part, expectedSampleAnswer) => {
@@ -88,4 +92,4 @@ const process = (part, expectedSampleAnswer) => {
   console.log(`part ${part} real answer`, getTrajectories('./day_17/input.txt'))
 }
 
-process('A', 45)
+process('B', 112)
