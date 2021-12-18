@@ -23,10 +23,10 @@ const getTrajectories = fileName => {
     const p = { x: 0, y: 0 }
     const v = { ...velocity }
 
-    let shotMaxYPosition = 0
+    let maxHeight = 0
 
     while (shotStillGoing(p, v)) {
-      shotMaxYPosition = Math.max(shotMaxYPosition, p.y)
+      maxHeight = Math.max(maxHeight, p.y)
 
       if (!targetHit(p)) {
         p.x += v.x
@@ -38,13 +38,11 @@ const getTrajectories = fileName => {
       }
     }
 
-    const hit = targetHit(p)
-
     return {
       finalX: p.x,
       finalY: p.y,
-      hit,
-      maxPosition: hit ? shotMaxYPosition : 0
+      hit: targetHit(p),
+      maxHeight
     }
   }
 
@@ -59,7 +57,7 @@ const getTrajectories = fileName => {
       const middle = Math.floor((shotMinX + shotMaxX) / 2)
       result = fireShot({ x: middle, y })
       if (result.hit) {
-        overallMaxHeight = Math.max(overallMaxHeight, result.maxPosition)
+        overallMaxHeight = Math.max(overallMaxHeight, result.maxHeight)
       } else if (result.finalY < target.minY) {
         shotMinX = middle + 1
       } else {

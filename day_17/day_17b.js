@@ -23,11 +23,7 @@ const getTrajectories = fileName => {
     const p = { x: 0, y: 0 }
     const v = { ...velocity }
 
-    let shotMaxYPosition = 0
-
     while (shotStillGoing(p, v)) {
-      shotMaxYPosition = Math.max(shotMaxYPosition, p.y)
-
       if (!targetHit(p)) {
         p.x += v.x
         p.y += v.y
@@ -38,13 +34,10 @@ const getTrajectories = fileName => {
       }
     }
 
-    const hit = targetHit(p)
-
     return {
       finalX: p.x,
       finalY: p.y,
-      hit,
-      maxPosition: hit ? shotMaxYPosition : 0
+      hit: targetHit(p)
     }
   }
 
