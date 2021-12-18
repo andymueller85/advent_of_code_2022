@@ -22,28 +22,29 @@ const getTrajectories = fileName => {
     ((v.x >= 0 && p.x <= target.maxX) || (v.x <= 0 && p.x >= target.minX))
 
   const fireShot = velocity => {
-    const position = { x: 0, y: 0 }
+    const p = { x: 0, y: 0 }
+    const v = { ...velocity }
 
     let shotMaxYPosition = 0
 
-    while (shotStillGoing(position, velocity)) {
-      shotMaxYPosition = Math.max(shotMaxYPosition, position.y)
+    while (shotStillGoing(p, v)) {
+      shotMaxYPosition = Math.max(shotMaxYPosition, p.y)
 
-      if (!targetHit(position)) {
-        position.x += velocity.x
-        position.y += velocity.y
-        if (velocity.x !== 0) {
-          velocity.x += velocity.x > 0 ? -1 : 1
+      if (!targetHit(p)) {
+        p.x += v.x
+        p.y += v.y
+        if (v.x !== 0) {
+          v.x += v.x > 0 ? -1 : 1
         }
-        velocity.y--
+        v.y--
       }
     }
 
-    const hit = targetHit(position)
+    const hit = targetHit(p)
 
     return {
-      finalX: position.x,
-      finalY: position.y,
+      finalX: p.x,
+      finalY: p.y,
       hit,
       maxPosition: hit ? shotMaxYPosition : 0
     }
@@ -51,7 +52,7 @@ const getTrajectories = fileName => {
 
   let overallMaxHeight = 0
 
-  for (let y = 200; y > 0; y--) {
+  Array.from({ length: 400 }, (_, i) => i - 200).forEach(y => {
     let shotMinX = 0
     let shotMaxX = 200
     let result = fireShot({ x: shotMaxX, y })
@@ -60,17 +61,14 @@ const getTrajectories = fileName => {
       const middle = Math.floor((shotMinX + shotMaxX) / 2)
       result = fireShot({ x: middle, y })
       if (result.hit) {
-        // might have to try some more y values here - could be multiple hits for the same y
         overallMaxHeight = Math.max(overallMaxHeight, result.maxPosition)
+      } else if (result.finalY < target.minY) {
+        shotMinX = middle + 1
       } else {
-        if (result.finalY < target.minY) {
-          shotMinX = middle + 1
-        } else {
-          shotMaxX = middle - 1
-        }
+        shotMaxX = middle - 1
       }
     }
-  }
+  })
 
   return overallMaxHeight
 }

@@ -22,28 +22,29 @@ const getTrajectories = fileName => {
     ((v.x >= 0 && p.x <= target.maxX) || (v.x <= 0 && p.x >= target.minX))
 
   const fireShot = velocity => {
-    const position = { x: 0, y: 0 }
+    const p = { x: 0, y: 0 }
+    const v = { ...velocity }
 
     let shotMaxYPosition = 0
 
-    while (shotStillGoing(position, velocity)) {
-      shotMaxYPosition = Math.max(shotMaxYPosition, position.y)
+    while (shotStillGoing(p, v)) {
+      shotMaxYPosition = Math.max(shotMaxYPosition, p.y)
 
-      if (!targetHit(position)) {
-        position.x += velocity.x
-        position.y += velocity.y
-        if (velocity.x !== 0) {
-          velocity.x += velocity.x > 0 ? -1 : 1
+      if (!targetHit(p)) {
+        p.x += v.x
+        p.y += v.y
+        if (v.x !== 0) {
+          v.x += v.x > 0 ? -1 : 1
         }
-        velocity.y--
+        v.y--
       }
     }
 
-    const hit = targetHit(position)
+    const hit = targetHit(p)
 
     return {
-      finalX: position.x,
-      finalY: position.y,
+      finalX: p.x,
+      finalY: p.y,
       hit,
       maxPosition: hit ? shotMaxYPosition : 0
     }
@@ -52,7 +53,7 @@ const getTrajectories = fileName => {
   let hitCount = 0
 
   // +-300 is arbitrary, and enough for this dataset. could probably be smarter.
-  for (let y = -300; y < 300; y++) {
+  Array.from({ length: 600 }, (_, i) => i - 300).forEach(y => {
     let shotMinX = -300
     let shotMaxX = 300
     let result = fireShot({ x: shotMaxX, y })
@@ -63,18 +64,16 @@ const getTrajectories = fileName => {
       if (result.hit) {
         // this is a very naive solution. If we have a hit try all the x's
         // around it - +-20 is a high enough range for this dataset
-        for (let x = middle - 20; x < middle + 20; x++) {
+        Array.from({ length: 40 }, (_, i) => middle - (i - 20)).forEach(x => {
           hitCount += fireShot({ x, y }).hit
-        }
+        })
+      } else if (result.finalY < target.minY) {
+        shotMinX = middle + 1
       } else {
-        if (result.finalY < target.minY) {
-          shotMinX = middle + 1
-        } else {
-          shotMaxX = middle - 1
-        }
+        shotMaxX = middle - 1
       }
     }
-  }
+  })
 
   return hitCount
 }
