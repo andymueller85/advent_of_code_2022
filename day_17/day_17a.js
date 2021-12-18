@@ -1,13 +1,11 @@
 const getTrajectories = fileName => {
-  const [xRange, yRange] = require('fs')
+  const [[minX, maxX], [minY, maxY]] = require('fs')
     .readFileSync(fileName, 'utf8')
     .replace(/\r/g, '')
     .replace(/\n/g, '')
     .split(',')
     .map(r => r.split('..').map(c => parseInt(c, 10)))
 
-  const [minX, maxX] = xRange
-  const [minY, maxY] = yRange
   const target = { minX, maxX, minY, maxY }
 
   const targetHit = p =>
@@ -55,7 +53,7 @@ const getTrajectories = fileName => {
   Array.from({ length: 400 }, (_, i) => i - 200).forEach(y => {
     let shotMinX = 0
     let shotMaxX = 200
-    let result = fireShot({ x: shotMaxX, y })
+    let result = { hit: false }
 
     while (shotMinX < shotMaxX && !result.hit) {
       const middle = Math.floor((shotMinX + shotMaxX) / 2)

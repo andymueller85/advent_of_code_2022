@@ -1,13 +1,11 @@
 const getTrajectories = fileName => {
-  const [xRange, yRange] = require('fs')
+  const [[minX, maxX], [minY, maxY]] = require('fs')
     .readFileSync(fileName, 'utf8')
     .replace(/\r/g, '')
     .replace(/\n/g, '')
     .split(',')
     .map(r => r.split('..').map(c => parseInt(c, 10)))
 
-  const [minX, maxX] = xRange
-  const [minY, maxY] = yRange
   const target = { minX, maxX, minY, maxY }
 
   const targetHit = p =>
@@ -50,13 +48,13 @@ const getTrajectories = fileName => {
     }
   }
 
-  let hitCount = 0
+  let answer = 0
 
   // +-300 is arbitrary, and enough for this dataset. could probably be smarter.
   Array.from({ length: 600 }, (_, i) => i - 300).forEach(y => {
     let shotMinX = -300
     let shotMaxX = 300
-    let result = fireShot({ x: shotMaxX, y })
+    let result = { hit: false }
 
     while (shotMinX < shotMaxX && !result.hit) {
       const middle = Math.floor((shotMinX + shotMaxX) / 2)
@@ -65,7 +63,7 @@ const getTrajectories = fileName => {
         // this is a very naive solution. If we have a hit try all the x's
         // around it - +-20 is a high enough range for this dataset
         Array.from({ length: 40 }, (_, i) => middle - (i - 20)).forEach(x => {
-          hitCount += fireShot({ x, y }).hit
+          answer += fireShot({ x, y }).hit
         })
       } else if (result.finalY < target.minY) {
         shotMinX = middle + 1
@@ -75,7 +73,7 @@ const getTrajectories = fileName => {
     }
   })
 
-  return hitCount
+  return answer
 }
 
 const process = (part, expectedSampleAnswer) => {
