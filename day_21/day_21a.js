@@ -17,13 +17,13 @@ const playGame = fileName => {
   }
 
   while (player1Score < 1000 && player2Score < 1000) {
-    const turnRoll = diceRoll * 3 + 6
+    const roll = diceRoll * 3 + 6
 
     if (player1Turn) {
-      player1Position = movePiece(player1Position, turnRoll)
+      player1Position = movePiece(player1Position, roll)
       player1Score += player1Position
     } else {
-      player2Position = movePiece(player2Position, turnRoll)
+      player2Position = movePiece(player2Position, roll)
       player2Score += player2Position
     }
 
