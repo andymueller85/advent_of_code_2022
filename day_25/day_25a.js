@@ -11,6 +11,9 @@ const moveSeaCucumbers = fileName => {
 
   const nextIndex = (i, length) => (i === length - 1 ? 0 : i + 1)
 
+  const herdsAreDifferent = (a, b) =>
+    a.some((r, rI) => r.some((c, cI) => b[rI][cI] !== c))
+
   const moveHerd = (grid, herdType) =>
     grid.reduce((acc, r) => {
       const rowHolder = [...r]
@@ -30,14 +33,9 @@ const moveSeaCucumbers = fileName => {
 
   do {
     preMoveCucumbers = [...seaCucumbers]
-    seaCucumbers = moveHerd(seaCucumbers, '>')
-    seaCucumbers = swapXY(moveHerd(swapXY(seaCucumbers), 'v'))
+    seaCucumbers = swapXY(moveHerd(swapXY(moveHerd(seaCucumbers, '>')), 'v'))
     count++
-  } while (
-    seaCucumbers.some((r, rI) =>
-      r.some((c, cI) => preMoveCucumbers[rI][cI] !== c)
-    )
-  )
+  } while (herdsAreDifferent(seaCucumbers, preMoveCucumbers))
 
   return count
 }
