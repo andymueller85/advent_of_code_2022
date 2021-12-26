@@ -6,45 +6,38 @@ const moveSeaCucumbers = fileName => {
     .filter(d => d)
     .map(r => r.split(''))
 
-  const GRID_WIDTH = seaCucumbers[0].length
-  const GRID_HEIGHT = seaCucumbers.length
-
   const swapXY = grid =>
     grid[0].map((_, colIndex) => grid.map(row => row[colIndex]))
 
   const nextIndex = (i, length) => (i === length - 1 ? 0 : i + 1)
 
-  const moveHerd = (grid, herdType, length) => {
-    let updatedGrid = []
-    grid.forEach(r => {
-      let tempRow = [...r]
+  const moveHerd = (grid, herdType) =>
+    grid.reduce((acc, r) => {
+      const rowHolder = [...r]
 
-      r.forEach((c, cI) => {
-        if (c === herdType && r[nextIndex(cI, length)] === '.') {
-          tempRow[cI] = '.'
-          tempRow[nextIndex(cI, length)] = herdType
+      r.forEach((c, i) => {
+        if (c === herdType && r[nextIndex(i, r.length)] === '.') {
+          rowHolder[i] = '.'
+          rowHolder[nextIndex(i, r.length)] = herdType
         }
       })
 
-      updatedGrid.push(tempRow)
-    })
+      return [...acc, rowHolder]
+    }, [])
 
-    return updatedGrid
-  }
-
-  let shouldContinue = true
   let count = 0
+  let preMoveCucumbers
 
-  while (shouldContinue) {
-    const preMoveCucumbers = [...seaCucumbers]
-    seaCucumbers = moveHerd(seaCucumbers, '>', GRID_WIDTH)
-    seaCucumbers = swapXY(moveHerd(swapXY(seaCucumbers), 'v', GRID_HEIGHT))
-    shouldContinue = seaCucumbers.some((r, rI) =>
+  do {
+    preMoveCucumbers = [...seaCucumbers]
+    seaCucumbers = moveHerd(seaCucumbers, '>')
+    seaCucumbers = swapXY(moveHerd(swapXY(seaCucumbers), 'v'))
+    count++
+  } while (
+    seaCucumbers.some((r, rI) =>
       r.some((c, cI) => preMoveCucumbers[rI][cI] !== c)
     )
-
-    count++
-  }
+  )
 
   return count
 }
