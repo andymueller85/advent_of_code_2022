@@ -1,7 +1,4 @@
-const swapXY = grid =>
-  grid[0].map((_, colIndex) => grid.map(row => row[colIndex]))
-
-const nextIndex = (i, length) => (i === length - 1 ? 0 : i + 1)
+const swapXY = grid => grid[0].map((_, i) => grid.map(r => r[i]))
 
 const herdsAreDifferent = (a, b) =>
   a.some((r, rI) => r.some((c, cI) => b[rI][cI] !== c))
@@ -11,9 +8,11 @@ const moveHerd = (grid, herdType) =>
     const rowHolder = [...r]
 
     r.forEach((c, i) => {
-      if (c === herdType && r[nextIndex(i, r.length)] === '.') {
+      const nextIndex = i === r.length - 1 ? 0 : i + 1
+
+      if (c === herdType && r[nextIndex] === '.') {
         rowHolder[i] = '.'
-        rowHolder[nextIndex(i, r.length)] = herdType
+        rowHolder[nextIndex] = herdType
       }
     })
 
@@ -33,7 +32,8 @@ const moveSeaCucumbers = fileName => {
 
   do {
     preMoveCucumbers = [...seaCucumbers]
-    seaCucumbers = swapXY(moveHerd(swapXY(moveHerd(seaCucumbers, '>')), 'v'))
+    seaCucumbers = moveHerd(seaCucumbers, '>')
+    seaCucumbers = swapXY(moveHerd(swapXY(seaCucumbers), 'v'))
     count++
   } while (herdsAreDifferent(seaCucumbers, preMoveCucumbers))
 
