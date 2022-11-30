@@ -25,7 +25,7 @@ export const spawnFishies = (fileName, days) => {
 }
 
 const process = (part, expectedAnswer, days) => {
-  const sampleAnswer = spawnFishies('./day_06/sample_input.txt', days)
+  const sampleAnswer = spawnFishies('./day_01/sample_input.txt', days)
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
@@ -34,7 +34,7 @@ const process = (part, expectedAnswer, days) => {
 
   console.log(
     `part ${part} real answer`,
-    spawnFishies('./day_06/input.txt', days)
+    spawnFishies('./day_01/input.txt', days)
   )
 }
 
