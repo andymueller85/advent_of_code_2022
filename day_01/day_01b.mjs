@@ -1,42 +1,34 @@
 import * as fs from 'fs'
 
-export const spawnFishies = (fileName, days) => {
-  const input = fs
+export const countCalories = fileName => {
+  const elves = fs
     .readFileSync(fileName, 'utf8')
-    .replace(/\r?\n/, '')
-    .split(',')
-  const fishies = Array.from(
-    { length: 9 },
-    (_, i) => input.filter(f => f === i.toString()).length
+    .replace(/\r/g, '')
+    .split('\n\n')
+    .filter(d => d)
+
+  const elvesMap = elves.map(e =>
+    e
+      .split('\n')
+      .filter(d => d)
+      .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
   )
 
-  Array.from({ length: days }).forEach(() => {
-    const f0Holder = fishies[0]
-
-    Array.from({ length: 8 }, (_, i) => i).forEach(f => {
-      fishies[f] = fishies[f + 1]
-    })
-
-    fishies[6] += f0Holder
-    fishies[8] = f0Holder
-  })
-
-  return fishies.reduce((acc, cur) => acc + cur)
+  return elvesMap
+    .sort((a, b) => b - a)
+    .slice(0, 3)
+    .reduce((acc, cur) => acc + cur)
 }
 
-const process = (part, expectedAnswer, days) => {
-  const sampleAnswer = spawnFishies('./day_01/sample_input.txt', days)
+const process = (part, expectedAnswer) => {
+  const sampleAnswer = countCalories('./day_01/sample_input.txt')
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(
-    `part ${part} real answer`,
-    spawnFishies('./day_01/input.txt', days)
-  )
+  console.log(`part ${part} real answer`, countCalories('./day_01/input.txt'))
 }
 
-process('A', 5934, 80)
-process('B', 26984457539, 256)
+process('A', 45000)
