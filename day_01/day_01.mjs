@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 
-const getSums = fileName =>
+const topN = (fileName, n) =>
   fs
     .readFileSync(fileName, 'utf8')
     .split('\n\n')
@@ -10,25 +10,20 @@ const getSums = fileName =>
         .filter(d => d)
         .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
     )
-
-const top1 = fileName => Math.max(...getSums(fileName))
-
-const top3 = fileName =>
-  getSums(fileName)
     .sort((a, b) => b - a)
-    .slice(0, 3)
+    .slice(0, n)
     .reduce((acc, cur) => acc + cur)
 
-const process = (part, expectedAnswer, fn) => {
-  const sampleAnswer = fn('./day_01/sample_input.txt')
+const process = (part, expectedAnswer, n) => {
+  const sampleAnswer = topN('./day_01/sample_input.txt', n)
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part ${part} real answer`, fn('./day_01/input.txt'))
+  console.log(`part ${part} real answer`, topN('./day_01/input.txt', n))
 }
 
-process('A', 24000, top1)
-process('B', 45000, top3)
+process('A', 24000, 1)
+process('B', 45000, 3)
