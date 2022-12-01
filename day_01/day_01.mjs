@@ -3,7 +3,7 @@ import * as fs from 'fs'
 const topN = (fileName, n) =>
   fs
     .readFileSync(fileName, 'utf8')
-    .split('\n\n')
+    .split(/\r?\n\r?\n/)
     .map(e =>
       e
         .split(/\r?\n/)
@@ -13,6 +13,7 @@ const topN = (fileName, n) =>
     .sort((a, b) => b - a)
     .slice(0, n)
     .reduce((acc, cur) => acc + cur)
+
 
 const process = (part, expectedAnswer, n) => {
   const sampleAnswer = topN('./day_01/sample_input.txt', n)
