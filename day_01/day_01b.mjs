@@ -1,24 +1,18 @@
 import * as fs from 'fs'
 
-export const countCalories = fileName => {
-  const elves = fs
+export const countCalories = fileName =>
+  fs
     .readFileSync(fileName, 'utf8')
-    .replace(/\r/g, '')
     .split('\n\n')
-    .filter(d => d)
-
-  const elvesMap = elves.map(e =>
-    e
-      .split('\n')
-      .filter(d => d)
-      .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
-  )
-
-  return elvesMap
+    .map(e =>
+      e
+        .split(/\r?\n/)
+        .filter(d => d)
+        .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
+    )
     .sort((a, b) => b - a)
     .slice(0, 3)
     .reduce((acc, cur) => acc + cur)
-}
 
 const process = (part, expectedAnswer) => {
   const sampleAnswer = countCalories('./day_01/sample_input.txt')

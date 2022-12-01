@@ -1,21 +1,17 @@
 import * as fs from 'fs'
 
-export const countCalories = fileName => {
-  const elves = fs
-    .readFileSync(fileName, 'utf8')
-    .replace(/\r/g, '')
-    .split('\n\n')
-    .filter(d => d)
-
-  const elvesMap = elves.map(e =>
-    e
-      .split('\n')
-      .filter(d => d)
-      .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
+export const countCalories = fileName =>
+  Math.max(
+    ...fs
+      .readFileSync(fileName, 'utf8')
+      .split('\n\n')
+      .map(e =>
+        e
+          .split(/\r?\n/)
+          .filter(d => d)
+          .reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0)
+      )
   )
-
-  return Math.max(...elvesMap)
-}
 
 const process = (part, expectedAnswer) => {
   const sampleAnswer = countCalories('./day_01/sample_input.txt')
