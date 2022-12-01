@@ -7,16 +7,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Day 1a",
+      "name": "Day 1",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/day_01/day_01a.mjs"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Day 1b",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/day_01/day_01b.mjs"
+      "program": "${workspaceFolder}/day_01/day_01.mjs"
     }
   ]
 }
