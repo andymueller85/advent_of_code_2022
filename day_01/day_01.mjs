@@ -14,7 +14,6 @@ const topN = (fileName, n) =>
     .slice(0, n)
     .reduce((acc, cur) => acc + cur)
 
-
 const process = (part, expectedAnswer, n) => {
   const sampleAnswer = topN('./day_01/sample_input.txt', n)
 
