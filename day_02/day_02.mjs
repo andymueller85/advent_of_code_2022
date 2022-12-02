@@ -15,12 +15,9 @@ const lookup = {
   Z: { beats: 'B', losesTo: 'A', ties: 'C', points: 3, name: 'scissors' }
 }
 
-const getTurnScoreA = ([oppponent, me]) => {
-  return (
-    lookup[me].points +
-    (lookup[me].beats === oppponent ? 6 : lookup[me].ties === oppponent ? 3 : 0)
-  )
-}
+const getTurnScoreA = ([oppponent, me]) =>
+  lookup[me].points +
+  (lookup[me].beats === oppponent ? 6 : lookup[me].ties === oppponent ? 3 : 0)
 
 const getTurnScoreB = ([oppponent, instruction]) => {
   const { points } = resultLookup[instruction]
@@ -34,16 +31,16 @@ const getTurnScoreB = ([oppponent, instruction]) => {
   }
 }
 
-const playPRS = (fileName, reduceFn) =>
+const playPRS = (fileName, turnScoreFn) =>
   fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
     .filter(d => d)
     .map(turn => turn.split(' '))
-    .reduce(reduceFn, 0)
+    .reduce((acc, cur) => acc + turnScoreFn(cur), 0)
 
-const process = (part, expectedAnswer, reduceFn) => {
-  const sampleAnswer = playPRS('./day_02/sample_input.txt', reduceFn)
+const process = (part, expectedAnswer, turnScoreFn) => {
+  const sampleAnswer = playPRS('./day_02/sample_input.txt', turnScoreFn)
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
@@ -52,9 +49,9 @@ const process = (part, expectedAnswer, reduceFn) => {
 
   console.log(
     `part ${part} real answer`,
-    playPRS('./day_02/input.txt', reduceFn)
+    playPRS('./day_02/input.txt', turnScoreFn)
   )
 }
 
-process('A', 15, (acc, cur) => acc + getTurnScoreA(cur))
-process('B', 12, (acc, cur) => acc + getTurnScoreB(cur))
+process('A', 15, getTurnScoreA)
+process('B', 12, getTurnScoreB)
