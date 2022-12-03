@@ -1,9 +1,9 @@
 import * as fs from 'fs'
 
-const resultLookup = {
-  X: { name: 'lose', points: 0 },
-  Y: { name: 'draw', points: 3 },
-  Z: { name: 'win', points: 6 }
+const instructionLookup = {
+  X: { name: 'beats', points: 0 },
+  Y: { name: 'ties', points: 3 },
+  Z: { name: 'losesTo', points: 6 }
 }
 
 const lookup = {
@@ -15,20 +15,14 @@ const lookup = {
   Z: { beats: 'B', losesTo: 'A', ties: 'C', points: 3, name: 'scissors' }
 }
 
-const getTurnScoreA = ([oppponent, me]) =>
-  lookup[me].points +
-  (lookup[me].beats === oppponent ? 6 : lookup[me].ties === oppponent ? 3 : 0)
+const getTurnScoreA = ([oppponent, me]) => {
+  const { points, beats, ties } = lookup[me]
+  return points + (beats === oppponent ? 6 : ties === oppponent ? 3 : 0)
+}
 
 const getTurnScoreB = ([oppponent, instruction]) => {
-  const { points } = resultLookup[instruction]
-  switch (resultLookup[instruction].name) {
-    case 'lose':
-      return points + lookup[lookup[oppponent].beats].points
-    case 'win':
-      return points + lookup[lookup[oppponent].losesTo].points
-    case 'draw':
-      return points + lookup[lookup[oppponent].ties].points
-  }
+  const { points, name } = instructionLookup[instruction]
+  return points + lookup[lookup[oppponent][name]].points
 }
 
 const playPRS = (fileName, turnScoreFn) =>
