@@ -40,10 +40,7 @@ const process = (part, expectedAnswer, turnScoreFn) => {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(
-    `part ${part} real answer`,
-    playPRS('./day_02/input.txt', turnScoreFn)
-  )
+  console.log(`part ${part} real answer`, playPRS('./day_02/input.txt', turnScoreFn))
 }
 
 process('A', 15, getTurnScoreA)
