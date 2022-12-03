@@ -15,10 +15,9 @@ const lookup = {
   Z: { beats: 'B', losesTo: 'A', ties: 'C', points: 3, name: 'scissors' }
 }
 
-const getTurnScoreA = ([oppponent, me]) => {
-  const { points, beats, ties } = lookup[me]
-  return points + (beats === oppponent ? 6 : ties === oppponent ? 3 : 0)
-}
+const getTurnScoreA = ([oppponent, me]) =>
+  lookup[oppponent].points + instructionLookup[me].points
+
 
 const getTurnScoreB = ([oppponent, instruction]) => {
   const { points, name } = instructionLookup[instruction]
