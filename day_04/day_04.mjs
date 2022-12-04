@@ -6,40 +6,37 @@ const parsePairs = fileName =>
     .split(/\r?\n/)
     .filter(d => d)
 
-const getBoundaries = range => range.split('-').map(l => parseInt(l))
+const getBoundaries = range => range.split('-').map(l => parseInt(l, 10))
 
-const cleanupCampA = fileName => {
-  return parsePairs(fileName).reduce((acc, cur) => {
-    const [e1Range, e2Range] = cur.split(',')
-    const [e1Lower, e1Upper] = getBoundaries(e1Range)
-    const [e2Lower, e2Upper] = getBoundaries(e2Range)
+const getElves = pair => {
+  const [e1Range, e2Range] = pair.split(',')
+  const [e1Lower, e1Upper] = getBoundaries(e1Range)
+  const [e2Lower, e2Upper] = getBoundaries(e2Range)
 
-    if ((e1Lower <= e2Lower && e1Upper >= e2Upper) || (e2Lower <= e1Lower && e2Upper >= e1Upper)) {
-      return acc + 1
-    }
-
-    return acc
-  }, 0)
+  return { e1: { lower: e1Lower, upper: e1Upper }, e2: { lower: e2Lower, upper: e2Upper } }
 }
 
-const cleanupCampB = fileName => {
-  return parsePairs(fileName).reduce((acc, cur) => {
-    const [e1Range, e2Range] = cur.split(',')
-    const [e1Lower, e1Upper] = getBoundaries(e1Range)
-    const [e2Lower, e2Upper] = getBoundaries(e2Range)
+const cleanupCampA = fileName =>
+  parsePairs(fileName).reduce((acc, cur) => {
+    const { e1, e2 } = getElves(cur)
+    const subset =
+      (e1.lower <= e2.lower && e1.upper >= e2.upper) ||
+      (e2.lower <= e1.lower && e2.upper >= e1.upper)
 
-    if (
-      (e1Lower >= e2Lower && e1Lower <= e2Upper) ||
-      (e1Upper >= e2Lower && e1Upper <= e2Upper) ||
-      (e2Lower >= e1Lower && e2Lower <= e1Upper) ||
-      (e2Upper >= e1Lower && e2Upper <= e1Upper)
-    ) {
-      return acc + 1
-    }
-
-    return acc
+    return acc + (subset ? 1 : 0)
   }, 0)
-}
+
+const cleanupCampB = fileName =>
+  parsePairs(fileName).reduce((acc, cur) => {
+    const { e1, e2 } = getElves(cur)
+    const overlap =
+      (e1.lower >= e2.lower && e1.lower <= e2.upper) ||
+      (e1.upper >= e2.lower && e1.upper <= e2.upper) ||
+      (e2.lower >= e1.lower && e2.lower <= e1.upper) ||
+      (e2.upper >= e1.lower && e2.upper <= e1.upper)
+
+    return acc + (overlap ? 1 : 0)
+  }, 0)
 
 const process = (part, expectedAnswer, fn) => {
   const sampleAnswer = fn('./day_04/sample_input.txt')
