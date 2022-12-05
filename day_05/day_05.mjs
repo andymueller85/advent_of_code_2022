@@ -1,21 +1,22 @@
 import * as fs from 'fs'
 
-const crateMover9000 = crateStacks => i => {
-  Array.from({ length: i.count }).forEach(_ =>
-    crateStacks[i.to - 1].push(crateStacks[i.from - 1].pop())
-  )
-}
+const crateMover9000 =
+  crateStacks =>
+  ({ from, to, count }) => {
+    Array.from({ length: count }).forEach(_ => crateStacks[to].push(crateStacks[from].pop()))
+  }
 
-const crateMover9001 = crateStacks => i => {
-  const fromStack = crateStacks[i.from - 1]
-  crateStacks[i.to - 1].push(...fromStack.splice(fromStack.length - i.count))
-}
+const crateMover9001 =
+  crateStacks =>
+  ({ from, to, count }) => {
+    const fromStack = crateStacks[from]
+    crateStacks[to].push(...fromStack.splice(fromStack.length - count))
+  }
 
 const stackSupplies = (fileName, crateMoverFn) => {
   const [crates, instructions] = fs.readFileSync(fileName, 'utf8').split(/\r?\n\r?\n/)
   const rows = crates.split(/\r?\n/).filter(d => d)
-  const length = Math.ceil(rows[0].length / 4)
-  const crateStacks = Array.from({ length }, () => [])
+  const crateStacks = Array.from({ length: Math.ceil(rows[0].length / 4) }, () => [])
 
   rows.forEach(r => {
     const rowArr = r.split('')
@@ -32,11 +33,11 @@ const stackSupplies = (fileName, crateMoverFn) => {
     .filter(d => d)
     .map(i => {
       const arr = i.split(' ')
-      return { count: parseInt(arr[1]), from: parseInt(arr[3]), to: parseInt(arr[5]) }
+      return { count: parseInt(arr[1]), from: parseInt(arr[3]) - 1, to: parseInt(arr[5]) - 1 }
     })
     .forEach(crateMoverFn(crateStacks))
 
-  return crateStacks.map(s => s[s.length - 1]).join('')
+  return crateStacks.map(s => s.pop()).join('')
 }
 
 const process = (part, expectedAnswer, crateMoverFn) => {
