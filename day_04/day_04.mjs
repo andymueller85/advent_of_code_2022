@@ -16,17 +16,15 @@ const parseElves = pair => {
   return { e1: { lower: e1Lower, upper: e1Upper }, e2: { lower: e2Lower, upper: e2Upper } }
 }
 
-const partATest = ({ e1, e2 }) =>
-  (e1.lower <= e2.lower && e1.upper >= e2.upper) || (e2.lower <= e1.lower && e2.upper >= e1.upper)
+const subset = (a, b) => a.lower <= b.lower && a.upper >= b.upper
+const overlap = (a, b) =>
+  (a.lower >= b.lower && a.lower <= b.upper) || (a.upper >= b.lower && a.upper <= b.upper)
 
-const partBTest = ({ e1, e2 }) =>
-  (e1.lower >= e2.lower && e1.lower <= e2.upper) ||
-  (e1.upper >= e2.lower && e1.upper <= e2.upper) ||
-  (e2.lower >= e1.lower && e2.lower <= e1.upper) ||
-  (e2.upper >= e1.lower && e2.upper <= e1.upper)
+const partATest = ({ e1, e2 }) => subset(e1, e2) || subset(e2, e1)
+const partBTest = ({ e1, e2 }) => overlap(e1, e2) || overlap(e2, e1)
 
 const cleanupCamp = (fileName, testFn) =>
-  parsePairs(fileName).reduce((acc, cur) => acc + (testFn(parseElves(cur)) ? 1 : 0), 0)
+  parsePairs(fileName).filter(pair => testFn(parseElves(pair))).length
 
 const process = (part, expectedAnswer, testFn) => {
   const sampleAnswer = cleanupCamp('./day_04/sample_input.txt', testFn)
