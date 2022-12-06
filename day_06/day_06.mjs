@@ -19,4 +19,4 @@ const process = (part, expectedAnswer, charCount) => {
 }
 
 process('A', 7, 4)
-process('A', 19, 14)
+process('B', 19, 14)
