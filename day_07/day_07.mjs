@@ -79,9 +79,8 @@ const partA = fileName => {
 const partB = fileName => {
   initialize()
   const currentUnusedSpace = TOTAL_DISK_SPACE - getDirSize(buildFileTree(fileName))
-  const MIN_SIZE_NEEDED_TO_DELETE = UNUSED_SPACE_NEEDED - currentUnusedSpace
 
-  return Math.min(...dirSizes.filter(s => s >= MIN_SIZE_NEEDED_TO_DELETE))
+  return Math.min(...dirSizes.filter(s => s >= UNUSED_SPACE_NEEDED - currentUnusedSpace))
 }
 
 const process = (part, expectedAnswer, fn) => {
