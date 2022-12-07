@@ -12,8 +12,6 @@ const initialize = () => {
 }
 
 const updateObjProp = (obj, value, propPath) => {
-  if (propPath.length === 0) return value
-
   const [head, ...rest] = propPath
 
   if (rest.length === 0) {
