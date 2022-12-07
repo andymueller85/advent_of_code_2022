@@ -12,26 +12,27 @@ const initialize = () => {
 }
 
 const updateObjProp = (obj, value, propPath) => {
-  const [head, ...rest] = propPath.split('.')
+  if (propPath.length === 0) return value
+
+  const [head, ...rest] = propPath
 
   if (rest.length === 0) {
     obj[head] = value
   } else {
-    updateObjProp(obj[head], value, rest.join('.'))
+    updateObjProp(obj[head], value, rest)
   }
 }
 
 const buildFileTree = fileName => {
-  const terminal = fs
-    .readFileSync(fileName, 'utf8')
-    .split(/\r?\n/)
-    .filter(d => d)
-
   let fileSystem = {}
   const curDirStack = []
 
-  terminal.forEach((l, i) => {
-    if (l.startsWith('$')) {
+  fs.readFileSync(fileName, 'utf8')
+    .split(/\r?\n/)
+    .filter(d => d)
+    .forEach((l, i, terminal) => {
+      if (!l.startsWith('$')) return
+
       const [_, cmd, arg] = l.split(' ')
 
       if (cmd === 'cd' && arg !== '/') {
@@ -43,21 +44,21 @@ const buildFileTree = fileName => {
       } else if (cmd === 'ls') {
         const remainingLines = terminal.slice(i + 1)
         const end = remainingLines.findIndex(l2 => l2.startsWith('$'))
-        const dirContents = remainingLines.slice(0, end === -1 ? undefined : end)
 
-        const dirObject = dirContents.reduce((acc, dirItem) => {
-          const [part1, part2] = dirItem.split(' ')
-          return { ...acc, [part2]: part1 === 'dir' ? {} : part1 }
-        }, {})
+        const dirObject = remainingLines
+          .slice(0, end === -1 ? undefined : end)
+          .reduce((acc, dirItem) => {
+            const [part1, part2] = dirItem.split(' ')
+            return { ...acc, [part2]: part1 === 'dir' ? {} : part1 }
+          }, {})
 
         if (curDirStack.length === 0) {
           fileSystem = dirObject
         } else {
-          updateObjProp(fileSystem, dirObject, curDirStack.join('.'))
+          updateObjProp(fileSystem, dirObject, curDirStack)
         }
       }
-    }
-  })
+    })
 
   return fileSystem
 }
@@ -66,7 +67,7 @@ const getDirSize = (obj, size = 0) => {
   let innerSize = size
 
   Object.values(obj).forEach(e => {
-    if (typeof e === 'string' || e instanceof String) {
+    if (typeof e === 'string') {
       innerSize += parseInt(e)
     } else {
       innerSize += getDirSize(e, size)
