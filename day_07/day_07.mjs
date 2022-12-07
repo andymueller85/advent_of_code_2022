@@ -1,7 +1,15 @@
 import * as fs from 'fs'
 
 const LIMIT = 100000
+const UNUSED_SPACE_NEEDED = 30000000
+const TOTAL_DISK_SPACE = 70000000
 let sizeTotal = 0
+let dirSizes = []
+
+const initialize = () => {
+  sizeTotal = 0
+  dirSizes = []
+}
 
 const updateObjProp = (obj, value, propPath) => {
   const [head, ...rest] = propPath.split('.')
@@ -28,10 +36,8 @@ const buildFileTree = fileName => {
 
       if (cmd === 'cd' && arg !== '/') {
         if (arg === '..') {
-          // go up a directory
           curDirStack.pop()
         } else {
-          //go down a directory
           curDirStack.push(arg)
         }
       } else if (cmd === 'ls') {
@@ -47,7 +53,6 @@ const buildFileTree = fileName => {
         if (curDirStack.length === 0) {
           fileSystem = dirObject
         } else {
-          // place this object at the current point in the tree
           updateObjProp(fileSystem, dirObject, curDirStack.join('.'))
         }
       }
@@ -57,7 +62,7 @@ const buildFileTree = fileName => {
   return fileSystem
 }
 
-const getDirSize = (obj, size) => {
+const getDirSize = (obj, size = 0) => {
   let innerSize = size
 
   Object.values(obj).forEach(e => {
@@ -70,25 +75,35 @@ const getDirSize = (obj, size) => {
 
   sizeTotal += innerSize <= LIMIT ? innerSize : 0
 
+  dirSizes.push(innerSize)
   return innerSize
 }
 
-const fileSizes = fileName => {
-  sizeTotal = 0
-  getDirSize(buildFileTree(fileName), 0)
+const partA = fileName => {
+  initialize()
+  getDirSize(buildFileTree(fileName))
 
   return sizeTotal
 }
 
-const process = (part, expectedAnswer) => {
-  const sampleAnswer = fileSizes('./day_07/sample_input.txt')
+const partB = fileName => {
+  initialize()
+  const currentUnusedSpace = TOTAL_DISK_SPACE - getDirSize(buildFileTree(fileName))
+  const MIN_SIZE_NEEDED_TO_DELETE = UNUSED_SPACE_NEEDED - currentUnusedSpace
+
+  return Math.min(...dirSizes.filter(s => s >= MIN_SIZE_NEEDED_TO_DELETE))
+}
+
+const process = (part, expectedAnswer, fn) => {
+  const sampleAnswer = fn('./day_07/sample_input.txt')
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part ${part} real answer`, fileSizes('./day_07/input.txt'))
+  console.log(`part ${part} real answer`, fn('./day_07/input.txt'))
 }
 
-process('A', 95437)
+process('A', 95437, partA)
+process('B', 24933642, partB)
