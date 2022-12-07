@@ -23,7 +23,7 @@ const updateObjProp = (obj, value, propPath) => {
 
 const buildFileTree = fileName => {
   let fileSystem = {}
-  const curDirStack = []
+  const dirStack = []
 
   fs.readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
@@ -33,13 +33,9 @@ const buildFileTree = fileName => {
 
       const [_, cmd, arg] = l.split(' ')
 
-      if (cmd === 'cd' && arg !== '/') {
-        if (arg === '..') {
-          curDirStack.pop()
-        } else {
-          curDirStack.push(arg)
-        }
-      } else if (cmd === 'ls') {
+      if (cmd === 'cd' && arg === '..') dirStack.pop()
+      else if (cmd === 'cd' && arg !== '/') dirStack.push(arg)
+      else if (cmd === 'ls') {
         const remainingLines = terminal.slice(i + 1)
         const end = remainingLines.findIndex(l2 => l2.startsWith('$'))
 
@@ -50,10 +46,10 @@ const buildFileTree = fileName => {
             return { ...acc, [part2]: part1 === 'dir' ? {} : part1 }
           }, {})
 
-        if (curDirStack.length === 0) {
+        if (dirStack.length === 0) {
           fileSystem = dirObject
         } else {
-          updateObjProp(fileSystem, dirObject, curDirStack)
+          updateObjProp(fileSystem, dirObject, dirStack)
         }
       }
     })
@@ -62,19 +58,14 @@ const buildFileTree = fileName => {
 }
 
 const getDirSize = (obj, size = 0) => {
-  let innerSize = size
-
-  Object.values(obj).forEach(e => {
-    if (typeof e === 'string') {
-      innerSize += parseInt(e)
-    } else {
-      innerSize += getDirSize(e, size)
-    }
-  })
+  const innerSize = Object.values(obj).reduce(
+    (acc, cur) => acc + (typeof cur === 'string' ? parseInt(cur) : getDirSize(cur, size)),
+    size
+  )
 
   sizeTotal += innerSize <= LIMIT ? innerSize : 0
-
   dirSizes.push(innerSize)
+
   return innerSize
 }
 
