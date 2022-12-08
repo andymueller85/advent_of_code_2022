@@ -18,7 +18,7 @@ const countVisibleTrees = fileName => {
   const gridHeight = grid.length
   const swappedGrid = swapXy(grid, gridWidth)
   const isEdge = (index, length) => index === 0 || index === length - 1
-  const isShortest = (row, val) => row.every(t => t < val)
+  const isTallest = (row, val) => row.every(t => t < val)
 
   return grid.reduce((rowAcc, curRow, rowIndex) => {
     return (
@@ -26,10 +26,10 @@ const countVisibleTrees = fileName => {
       curRow.reduce((colAcc, curCell, colIndex) => {
         return isEdge(rowIndex, gridWidth) ||
           isEdge(colIndex, gridHeight) ||
-          isShortest(swappedGrid[colIndex].slice(0, rowIndex), curCell) || // north
-          isShortest(swappedGrid[colIndex].slice(rowIndex + 1), curCell) || // south
-          isShortest(curRow.slice(colIndex + 1), curCell) || // east
-          isShortest(curRow.slice(0, colIndex), curCell) // west
+          isTallest(swappedGrid[colIndex].slice(0, rowIndex), curCell) || // north
+          isTallest(swappedGrid[colIndex].slice(rowIndex + 1), curCell) || // south
+          isTallest(curRow.slice(colIndex + 1), curCell) || // east
+          isTallest(curRow.slice(0, colIndex), curCell) // west
           ? colAcc + 1
           : colAcc
       }, 0)
