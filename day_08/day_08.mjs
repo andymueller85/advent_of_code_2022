@@ -37,7 +37,7 @@ const countVisibleTrees = fileName => {
   }, 0)
 }
 
-const getHightestScenicScore = fileName => {
+const getHighestScenicScore = fileName => {
   const grid = constructGrid(fileName)
   const gridWidth = grid[0].length
   const swappedGrid = swapXy(grid, gridWidth)
@@ -71,4 +71,4 @@ const process = (part, expectedAnswer, fn) => {
 }
 
 process('A', 21, countVisibleTrees)
-process('B', 8, getHightestScenicScore)
+process('B', 8, getHighestScenicScore)
