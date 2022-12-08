@@ -12,61 +12,50 @@ const constructGrid = fileName =>
     .filter(d => d)
     .map(r => [...r].map(c => parseInt(c)))
 
-const isEdge = (index, length) => index === 0 || index === length - 1
-const isShortest = (row, val) => row.every(t => t < val)
-
 const countVisibleTrees = fileName => {
   const grid = constructGrid(fileName)
   const gridWidth = grid[0].length
   const gridHeight = grid.length
   const swappedGrid = swapXy(grid, gridWidth)
+  const isEdge = (index, length) => index === 0 || index === length - 1
+  const isShortest = (row, val) => row.every(t => t < val)
 
   return grid.reduce((rowAcc, curRow, rowIndex) => {
     return (
       rowAcc +
       curRow.reduce((colAcc, curCell, colIndex) => {
-        const colArr = swappedGrid[colIndex]
-
-        if (
-          isEdge(rowIndex, gridWidth) ||
+        return isEdge(rowIndex, gridWidth) ||
           isEdge(colIndex, gridHeight) ||
-          isShortest(curRow.slice(0, colIndex), curCell) || // west
+          isShortest(swappedGrid[colIndex].slice(0, rowIndex), curCell) || // north
+          isShortest(swappedGrid[colIndex].slice(rowIndex + 1), curCell) || // south
           isShortest(curRow.slice(colIndex + 1), curCell) || // east
-          isShortest(colArr.slice(0, rowIndex), curCell) || // north
-          isShortest(colArr.slice(rowIndex + 1), curCell) // south
-        ) {
-          return colAcc + 1
-        }
-
-        return colAcc
+          isShortest(curRow.slice(0, colIndex), curCell) // west
+          ? colAcc + 1
+          : colAcc
       }, 0)
     )
   }, 0)
-}
-
-const viewingDistance = (treeLine, cell) => {
-  const viewBlockedIndex = treeLine.findIndex(t => t >= cell)
-  return viewBlockedIndex === -1 ? treeLine.length : viewBlockedIndex + 1
 }
 
 const getHightestScenicScore = fileName => {
   const grid = constructGrid(fileName)
   const gridWidth = grid[0].length
   const swappedGrid = swapXy(grid, gridWidth)
+  const viewingDistance = (treeLine, cell) => {
+    const viewBlockedIndex = treeLine.findIndex(t => t >= cell)
+    return viewBlockedIndex === -1 ? treeLine.length : viewBlockedIndex + 1
+  }
 
   return grid.reduce((rowAcc, curRow, rowIndex) => {
-    return Math.max(
-      curRow.reduce((colAcc, curCell, colIndex) => {
-        const colArr = swappedGrid[colIndex]
+    const bestViewingDistance = curRow.reduce((colAcc, curCell, colIndex) => {
+      const north = viewingDistance(swappedGrid[colIndex].slice(0, rowIndex).reverse(), curCell)
+      const south = viewingDistance(swappedGrid[colIndex].slice(rowIndex + 1), curCell)
+      const east = viewingDistance(curRow.slice(colIndex + 1), curCell)
+      const west = viewingDistance(curRow.slice(0, colIndex).reverse(), curCell)
+      return Math.max(north * south * east * west, colAcc)
+    }, 0)
 
-        const east = viewingDistance(curRow.slice(colIndex + 1), curCell)
-        const west = viewingDistance(curRow.slice(0, colIndex).reverse(), curCell)
-        const north = viewingDistance(colArr.slice(0, rowIndex).reverse(), curCell)
-        const south = viewingDistance(colArr.slice(rowIndex + 1), curCell)
-        return Math.max(east * west * north * south, colAcc)
-      }, 0),
-      rowAcc
-    )
+    return Math.max(bestViewingDistance, rowAcc)
   }, 0)
 }
 
