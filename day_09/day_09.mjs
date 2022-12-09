@@ -1,18 +1,18 @@
 import * as fs from 'fs'
 
-const partA = fileName => {
-  const instructions = fs
+const parseInput = fileName =>
+  fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
     .filter(d => d)
     .map(i => i.split(' '))
     .map(([dir, count]) => [dir, parseInt(count)])
 
-  const head = { x: 0, y: 0 }
-  const tail = { x: 0, y: 0 }
+const traverseRopeBridge = (fileName, knotCount) => {
+  const instructions = parseInput(fileName)
 
-  const visitedCoordinates = [{ ...tail }]
-
+  const knots = Array.from({ length: knotCount }, () => ({ x: 0, y: 0 }))
+  const visitedCoordinates = [{ ...knots[knotCount - 1] }]
   const addVisit = visit => {
     if (!visitedCoordinates.some(c => c.x === visit.x && c.y === visit.y))
       visitedCoordinates.push({ ...visit })
@@ -23,84 +23,86 @@ const partA = fileName => {
       // move head
       switch (dir) {
         case 'R':
-          head.x++
+          knots[0].x++
           break
         case 'L':
-          head.x--
+          knots[0].x--
           break
         case 'U':
-          head.y++
+          knots[0].y++
           break
         case 'D':
-          head.y--
+          knots[0].y--
           break
       }
 
-      // move tail
-      if (head.x === tail.x && head.y === tail.y) {
-        // do nothing - actually a lot of cases here. just remove this case.
-      } else if (head.x === tail.x && head.y - tail.y > 1) {
-        // move north
-        tail.y++
-      } else if (
-        head.x > tail.x &&
-        head.y > tail.y &&
-        (head.x - tail.x > 1 || head.y - tail.y > 1)
-      ) {
-        // move NE
-        tail.x++
-        tail.y++
-      } else if (head.x - tail.x > 1 && head.y === tail.y) {
-        // move east
-        tail.x++
-      } else if (
-        head.x > tail.x &&
-        head.y < tail.y &&
-        (head.x - tail.x > 1 || tail.y - head.y > 1)
-      ) {
-        // move SE
-        tail.x++
-        tail.y--
-      } else if (head.x === tail.x && tail.y - head.y > 1) {
-        // move south
-        tail.y--
-      } else if (
-        head.x < tail.x &&
-        head.y < tail.y &&
-        (tail.x - head.x > 1 || tail.y - head.y > 1)
-      ) {
-        // move SW
-        tail.x--
-        tail.y--
-      } else if (tail.x - head.x > 1 && head.y === tail.y) {
-        // move west
-        tail.x--
-      } else if (
-        head.x < tail.x &&
-        head.y > tail.y &&
-        (tail.x - head.x > 1 || head.y - tail.y > 1)
-      ) {
-        // move NW
-        tail.x--
-        tail.y++
-      }
+      for (let i = 1; i < knotCount; i++) {
+        const [leader, me] = [knots[i - 1], knots[i]]
 
-      addVisit(tail)
+        if (leader.x === me.x && leader.y - me.y > 1) {
+          // N
+          me.y++
+        } else if (
+          leader.x > me.x &&
+          leader.y > me.y &&
+          (leader.x - me.x > 1 || leader.y - me.y > 1)
+        ) {
+          // NE
+          me.x++
+          me.y++
+        } else if (leader.x - me.x > 1 && leader.y === me.y) {
+          // E
+          me.x++
+        } else if (
+          leader.x > me.x &&
+          leader.y < me.y &&
+          (leader.x - me.x > 1 || me.y - leader.y > 1)
+        ) {
+          // SE
+          me.x++
+          me.y--
+        } else if (leader.x === me.x && me.y - leader.y > 1) {
+          // S
+          me.y--
+        } else if (
+          leader.x < me.x &&
+          leader.y < me.y &&
+          (me.x - leader.x > 1 || me.y - leader.y > 1)
+        ) {
+          // SW
+          me.x--
+          me.y--
+        } else if (me.x - leader.x > 1 && leader.y === me.y) {
+          // W
+          me.x--
+        } else if (
+          leader.x < me.x &&
+          leader.y > me.y &&
+          (me.x - leader.x > 1 || leader.y - me.y > 1)
+        ) {
+          // NW
+          me.x--
+          me.y++
+        }
+
+        if (i === knotCount - 1) addVisit(me)
+      }
     })
   })
 
   return visitedCoordinates.length
 }
 
-const process = (part, expectedAnswer, fn) => {
-  const sampleAnswer = fn('./day_09/sample_input.txt')
+const process = (part, expectedAnswer, knotCount) => {
+  const sampleAnswer = traverseRopeBridge('./day_09/sample_input.txt', knotCount)
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part ${part} real answer`, fn('./day_09/input.txt'))
+  console.log(`part ${part} real answer`, traverseRopeBridge('./day_09/input.txt', knotCount))
 }
 
-process('A', 13, partA)
+process('A', 13, 2)
+process('B', 1, 10)
