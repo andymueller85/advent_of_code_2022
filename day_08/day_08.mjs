@@ -5,18 +5,21 @@ const swapXy = (grid, gridWidth) => {
   return allIndexes.map(c => grid.map(r => r[c]))
 }
 
-const constructGrid = fileName =>
-  fs
+const initialize = fileName => {
+  const grid = fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
     .filter(d => d)
     .map(r => [...r].map(c => parseInt(c)))
-
-const countVisibleTrees = fileName => {
-  const grid = constructGrid(fileName)
   const gridWidth = grid[0].length
   const gridHeight = grid.length
   const swappedGrid = swapXy(grid, gridWidth)
+
+  return { grid, gridWidth, gridHeight, swappedGrid }
+}
+
+const countVisibleTrees = fileName => {
+  const { grid, gridWidth, gridHeight, swappedGrid } = initialize(fileName)
   const isEdge = (index, length) => index === 0 || index === length - 1
   const isTallest = (row, val) => row.every(t => t < val)
 
@@ -38,9 +41,7 @@ const countVisibleTrees = fileName => {
 }
 
 const getHighestScenicScore = fileName => {
-  const grid = constructGrid(fileName)
-  const gridWidth = grid[0].length
-  const swappedGrid = swapXy(grid, gridWidth)
+  const { grid, swappedGrid } = initialize(fileName)
   const viewingDistance = (treeLine, cell) => {
     const viewBlockedIndex = treeLine.findIndex(t => t >= cell)
     return viewBlockedIndex === -1 ? treeLine.length : viewBlockedIndex + 1
