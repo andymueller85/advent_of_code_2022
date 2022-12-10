@@ -10,32 +10,23 @@ const parseInput = fileName =>
 
 const partA = fileName => {
   const input = parseInput(fileName)
-
   let cycle = 1
   let x = 1
   let total = 0
 
-  const checkValue = () => {
+  const advanceCycle = () => {
     if (cycle === 20 || (cycle - 20) % 40 === 0) {
       total += cycle * x
     }
-  }
-
-  const advanceCycle = () => {
-    checkValue()
     cycle++
   }
 
   input.forEach(([instr, val]) => {
-    if (instr === 'noop') {
+    Array.from({ length: instr === 'noop' ? 1 : 2 }).forEach(() => {
       advanceCycle()
-    } else if (instr === 'addx') {
-      Array.from({ length: 2 }).forEach(() => {
-        advanceCycle()
-      })
+    })
 
-      x += val
-    }
+    if (instr === 'addx') x += val
   })
 
   return total
@@ -66,17 +57,12 @@ const partB = fileName => {
   }
 
   input.forEach(([instr, val]) => {
-    if (instr === 'noop') {
+    Array.from({ length: instr === 'noop' ? 1 : 2 }).forEach(() => {
       renderPixel()
       advanceCycle()
-    } else if (instr === 'addx') {
-      Array.from({ length: 2 }).forEach(() => {
-        renderPixel()
-        advanceCycle()
-      })
+    })
 
-      sprite += val
-    }
+    if (instr === 'addx') sprite += val
   })
 
   screen.forEach(l => console.log(l.join('')))
