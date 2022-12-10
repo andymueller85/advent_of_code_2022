@@ -20,21 +20,12 @@ const traverseRopeBridge = (fileName, knotCount) => {
 
   instructions.forEach(([dir, count]) => {
     Array.from({ length: count }).forEach(() => {
-      // move head
-      switch (dir) {
-        case 'R':
-          knots[0].x++
-          break
-        case 'L':
-          knots[0].x--
-          break
-        case 'U':
-          knots[0].y++
-          break
-        case 'D':
-          knots[0].y--
-          break
-      }
+      const head = knots[0]
+
+      if (dir === 'R') head.x++
+      else if (dir === 'L') head.x--
+      else if (dir === 'U') head.y++
+      else if (dir === 'D') head.y--
 
       for (let i = 1; i < knotCount; i++) {
         const [leader, me] = [knots[i - 1], knots[i]]
