@@ -2,28 +2,28 @@ import * as fs from 'fs'
 
 class Monkey {
   constructor(monkeyString) {
-    const attribues = monkeyString.split(/\r?\n/).filter(d => d)
-
-    attribues.forEach(a => {
-      if (a.startsWith('Monkey')) {
-        this.name = a.split(' ')[1].replace(':', '')
-      } else if (a.includes('Starting items:')) {
-        this.items = a
-          .split(': ')[1]
-          .split(', ')
-          .map(i => ({ worryLevel: parseInt(i), throwTo: undefined }))
-      } else if (a.includes('Operation')) {
-        this.operation = a.split(': ')[1]
-      } else if (a.includes('Test: ')) {
-        this.divisibleByTest = parseInt(lastElement(a))
-      } else if (a.includes('true: ')) {
-        this.trueMonkey = lastElement(a)
-      } else if (a.includes('false: ')) {
-        this.falseMonkey = lastElement(a)
-      }
-
-      this.inspectCount = 0
-    })
+    monkeyString
+      .split(/\r?\n/)
+      .filter(d => d)
+      .forEach(l => {
+        if (l.startsWith('Monkey')) {
+          this.id = l.split(' ')[1].replace(':', '')
+        } else if (l.includes('Starting items:')) {
+          this.items = l
+            .split(': ')[1]
+            .split(', ')
+            .map(i => ({ worryLevel: parseInt(i), throwTo: undefined }))
+        } else if (l.includes('Operation')) {
+          this.operation = l.split(': ')[1]
+        } else if (l.includes('Test: ')) {
+          this.divisibleByTest = parseInt(lastElement(l))
+        } else if (l.includes('true: ')) {
+          this.trueMonkey = lastElement(l)
+        } else if (l.includes('false: ')) {
+          this.falseMonkey = lastElement(l)
+        }
+      })
+    this.inspectCount = 0
   }
 
   inspectItems(divideBy, modulo) {
@@ -31,10 +31,11 @@ class Monkey {
       const last = lastElement(this.operation)
       let modifier = last === 'old' ? item.worryLevel : parseInt(last)
 
-      item.worryLevel =
-        (this.operation.includes('+') ? item.worryLevel + modifier : item.worryLevel * modifier) %
-        modulo
-      item.worryLevel = Math.floor(item.worryLevel / divideBy)
+      item.worryLevel = Math.floor(
+        ((this.operation.includes('+') ? item.worryLevel + modifier : item.worryLevel * modifier) %
+          modulo) /
+          divideBy
+      )
       item.throwTo =
         item.worryLevel % this.divisibleByTest === 0 ? this.trueMonkey : this.falseMonkey
 
@@ -47,10 +48,7 @@ class Monkey {
   }
 }
 
-const lastElement = str => {
-  const words = str.split(' ')
-  return words[words.length - 1]
-}
+const lastElement = str => str.split(' ').reverse()[0]
 
 const monkeyBusiness = (fileName, divideBy, rounds) => {
   const monkeys = fs
@@ -64,7 +62,7 @@ const monkeyBusiness = (fileName, divideBy, rounds) => {
       m.inspectItems(divideBy, modulo)
       while (m.items.length > 0) {
         const itemToThrow = m.items.shift()
-        monkeys.find(m => m.name === itemToThrow.throwTo).catchItem(itemToThrow)
+        monkeys.find(m => m.id === itemToThrow.throwTo).catchItem(itemToThrow)
       }
     })
   })
