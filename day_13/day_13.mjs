@@ -17,8 +17,8 @@ const compare = (left, right) => {
   }
 }
 
-const main = fileName => {
-  return fs
+const parseInput = fileName =>
+  fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n\r?\n/)
     .map(pair =>
@@ -27,18 +27,31 @@ const main = fileName => {
         .filter(d => d)
         .map(packet => JSON.parse(packet))
     )
-    .reduce((acc, [left, right], i) => acc + (compare(left, right) < 0 ? i + 1 : 0), 0)
+
+const partA = fileName =>
+  parseInput(fileName).reduce(
+    (acc, [left, right], i) => acc + (compare(left, right) < 0 ? i + 1 : 0),
+    0
+  )
+
+const partB = fileName => {
+  const decoder1 = [[2]]
+  const decoder2 = [[6]]
+
+  const sorted = parseInput(fileName).flat().concat([decoder1, decoder2]).sort(compare)
+  return (sorted.findIndex(s => s === decoder1) + 1) * (sorted.findIndex(s => s === decoder2) + 1)
 }
 
-const process = (part, expectedAnswer) => {
-  const sampleAnswer = main('./day_13/sample_input.txt')
+const process = (part, expectedAnswer, fn) => {
+  const sampleAnswer = fn('./day_13/sample_input.txt')
 
   console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
     throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part ${part} real answer`, main('./day_13/input.txt'))
+  console.log(`part ${part} real answer`, fn('./day_13/input.txt'))
 }
 
-process('A', 13)
+process('A', 13, partA)
+process('B', 140, partB)
