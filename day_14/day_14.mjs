@@ -12,24 +12,20 @@ const processInput = fileName =>
     .map(l => l.split(' -> ').map(c => c.split(',')))
 
 const createGrid = () =>
-  Array.from({ length: GRID_SIZE }, () => Array.from({ length: GRID_SIZE }, () => '.'))
+  Array.from({ length: GRID_SIZE }, () => Array.from({ length: GRID_SIZE }, () => AIR))
 
 const placeRocks = (input, grid, floor) => {
-  input.forEach(line => {
-    line.forEach(([x, y], i) => {
-      if (line[i + 1]) {
-        if (x === line[i + 1][0]) {
+  input.forEach(point => {
+    point.forEach(([x, y], i) => {
+      if (point[i + 1]) {
+        if (x === point[i + 1][0]) {
           // vertical
-          const low = Math.min(y, line[i + 1][1])
-          const high = Math.max(y, line[i + 1][1])
-          for (let j = low; j <= high; j++) {
+          for (let j = Math.min(y, point[i + 1][1]); j <= Math.max(y, point[i + 1][1]); j++) {
             grid[j][x] = ROCK
           }
         } else {
           // horizontal
-          const low = Math.min(x, line[i + 1][0])
-          const high = Math.max(x, line[i + 1][0])
-          for (let j = low; j <= high; j++) {
+          for (let j = Math.min(x, point[i + 1][0]); j <= Math.max(x, point[i + 1][0]); j++) {
             grid[y][j] = ROCK
           }
         }
@@ -45,36 +41,31 @@ const placeRocks = (input, grid, floor) => {
   return grid
 }
 
-const continueFnA = (_, sandX, limit) => sandX < limit
+const continueFnA = (_, x) => x < GRID_SIZE - 1
 const continueFnB = entrance => entrance === AIR
 
 const dropSand = (grid, continueFn) => {
   let sandCount = 0
-  let sandX = 0
-  let sandY = 500
-  while (continueFn(grid[0][500], sandX, GRID_SIZE - 1)) {
-    sandX = 0
-    sandY = 500
-    let falling = true
-    while (falling) {
-      if (sandX === GRID_SIZE - 1) {
-        falling = false
-      } else if (grid[sandX + 1][sandY] === AIR) {
+  let x = 0
+  while (continueFn(grid[0][500], x)) {
+    x = 0
+    let y = 500
+    while (x !== GRID_SIZE - 1 && grid[x][y] !== SAND) {
+      if (grid[x + 1][y] === AIR) {
         // fall straight down
-        sandX++
-      } else if ([ROCK, SAND].includes(grid[sandX + 1][sandY])) {
-        if (grid[sandX + 1][sandY - 1] === AIR) {
+        x++
+      } else if ([ROCK, SAND].includes(grid[x + 1][y])) {
+        if (grid[x + 1][y - 1] === AIR) {
           // down & left
-          sandY--
-          sandX++
-        } else if (grid[sandX + 1][sandY + 1] === AIR) {
+          y--
+          x++
+        } else if (grid[x + 1][y + 1] === AIR) {
           // down & right
-          sandY++
-          sandX++
+          y++
+          x++
         } else {
           // come to rest
-          grid[sandX][sandY] = SAND
-          falling = false
+          grid[x][y] = SAND
           sandCount++
         }
       }
