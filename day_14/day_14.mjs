@@ -41,31 +41,31 @@ const placeRocks = (input, grid, floor) => {
   return grid
 }
 
-const continueFnA = (_, x) => x < GRID_SIZE - 1
+const continueFnA = (_, y) => y < GRID_SIZE - 1
 const continueFnB = entrance => entrance === AIR
 
 const dropSand = (grid, continueFn) => {
   let sandCount = 0
-  let x = 0
-  while (continueFn(grid[0][500], x)) {
-    x = 0
-    let y = 500
-    while (x !== GRID_SIZE - 1 && grid[x][y] !== SAND) {
-      if (grid[x + 1][y] === AIR) {
+  let y = 0
+  while (continueFn(grid[0][500], y)) {
+    y = 0
+    let x = 500
+    while (y !== GRID_SIZE - 1 && grid[y][x] !== SAND) {
+      if (grid[y + 1][x] === AIR) {
         // fall straight down
-        x++
-      } else if ([ROCK, SAND].includes(grid[x + 1][y])) {
-        if (grid[x + 1][y - 1] === AIR) {
+        y++
+      } else if ([ROCK, SAND].includes(grid[y + 1][x])) {
+        if (grid[y + 1][x - 1] === AIR) {
           // down & left
-          y--
-          x++
-        } else if (grid[x + 1][y + 1] === AIR) {
-          // down & right
+          x--
           y++
+        } else if (grid[y + 1][x + 1] === AIR) {
+          // down & right
           x++
+          y++
         } else {
           // come to rest
-          grid[x][y] = SAND
+          grid[y][x] = SAND
           sandCount++
         }
       }
