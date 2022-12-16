@@ -40,13 +40,15 @@ class Sensor {
   }
 }
 
-const beaconsA = (fileName, row) => {
-  const sensors = fs
+const parseInput = fileName =>
+  fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
     .filter(d => d)
     .map(s => new Sensor(s))
 
+const beaconsA = (fileName, row) => {
+  const sensors = parseInput(fileName)
   const mySet = new Set()
 
   sensors.forEach(s => {
@@ -63,11 +65,7 @@ const beaconsA = (fileName, row) => {
 }
 
 const beaconsB = (fileName, rowMax) => {
-  const sensors = fs
-    .readFileSync(fileName, 'utf8')
-    .split(/\r?\n/)
-    .filter(d => d)
-    .map(s => new Sensor(s))
+  const sensors = parseInput(fileName)
   const knownBeacons = sensors.map(s => JSON.stringify([s.nearestBeacon.x, s.nearestBeacon.y]))
   const holder = Array.from({ length: rowMax + 1 }, () => [])
 
@@ -80,7 +78,9 @@ const beaconsB = (fileName, rowMax) => {
     })
   })
 
-  return holder.reduce((acc, cur, i) => {
+  return holder.reduce((acc, cur, y) => {
+    if (acc) return acc
+
     // this is essentially looking for "gaps" in the ranges - these are potential beacons
     const possible = cur.find(a => cur.map(b => b.lower).includes(a.upper + 2))
 
@@ -88,14 +88,14 @@ const beaconsB = (fileName, rowMax) => {
       const possibleX = possible.upper + 1
       if (
         !cur.some(a => a.lower <= possibleX && possibleX <= a.upper) &&
-        !knownBeacons.some(b => b === JSON.stringify([possibleX, i]))
+        !knownBeacons.some(b => b === JSON.stringify([possibleX, y]))
       ) {
         // if it's not in one of the ranges and it's not one of the known beacons, we've found it!
-        return possibleX * 4000000 + i
+        return possibleX * 4000000 + y
       }
     }
     return acc
-  })
+  }, undefined)
 }
 
 const processA = (part, expectedAnswer, fn, testArg, realArg) => {
