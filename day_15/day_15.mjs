@@ -70,32 +70,28 @@ const beaconsB = (fileName, rowMax) => {
   const holder = Array.from({ length: rowMax + 1 }, () => [])
 
   sensors.forEach(s => {
-    const noBeaconCoordinates = s.noBeaconCoordinates()
-    Object.entries(noBeaconCoordinates).forEach(([key, value]) => {
+    Object.entries(s.noBeaconCoordinates()).forEach(([key, value]) => {
       if (key >= 0 && key <= rowMax) {
         holder[key].push(value)
       }
     })
   })
 
-  return holder.reduce((acc, cur, y) => {
-    if (acc) return acc
-
+  for (let y = 0; y < holder.length; y++) {
     // this is essentially looking for "gaps" in the ranges - these are potential beacons
-    const possible = cur.find(a => cur.map(b => b.lower).includes(a.upper + 2))
+    const possible = holder[y].find(a => holder[y].map(b => b.lower).includes(a.upper + 2))
 
     if (possible) {
       const possibleX = possible.upper + 1
       if (
-        !cur.some(a => a.lower <= possibleX && possibleX <= a.upper) &&
+        !holder[y].some(a => a.lower <= possibleX && possibleX <= a.upper) &&
         !knownBeacons.some(b => b === JSON.stringify([possibleX, y]))
       ) {
         // if it's not in one of the ranges and it's not one of the known beacons, we've found it!
         return possibleX * 4000000 + y
       }
     }
-    return acc
-  }, undefined)
+  }
 }
 
 const processA = (part, expectedAnswer, fn, testArg, realArg) => {
