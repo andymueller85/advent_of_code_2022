@@ -40,7 +40,7 @@ class Sensor {
   }
 }
 
-const beacons = (fileName, row) => {
+const beaconsA = (fileName, row) => {
   const sensors = fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
@@ -62,16 +62,74 @@ const beacons = (fileName, row) => {
   return mySet.size
 }
 
-const process = (part, expectedAnswer, row) => {
-  const sampleAnswer = beacons('./day_15/sample_input.txt', 10)
+const beaconsB = (fileName, rowMax) => {
+  const sensors = fs
+    .readFileSync(fileName, 'utf8')
+    .split(/\r?\n/)
+    .filter(d => d)
+    .map(s => new Sensor(s))
+  const knownBeacons = sensors.map(s => JSON.stringify([s.nearestBeacon.x, s.nearestBeacon.y]))
+  const holder = Array.from({ length: rowMax + 1 }, () => [])
 
-  console.log(`part ${part} sample answer`, sampleAnswer)
-  if (sampleAnswer !== expectedAnswer) {
-    throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
-  }
+  sensors.forEach(s => {
+    const noBeaconCoordinates = s.noBeaconCoordinates()
+    Object.entries(noBeaconCoordinates).forEach(([key, value]) => {
+      if (key >= 0 && key <= rowMax) {
+        holder[key].push(value)
+      }
+    })
+  })
 
-  console.log(`part ${part} real answer`, beacons('./day_15/input.txt', 2000000))
+  let answer
+  holder.forEach((h, i) => {
+    // this is essentially looking for "gaps" in the ranges - these are potential beacons
+    const possible = h.find(j => h.map(k => k.lower).includes(j.upper + 2))
+
+    if (possible) {
+      const possibleX = possible.upper + 1
+      const existsInARange = h.some(j => j.lower <= possibleX && possibleX <= j.upper)
+
+      if (
+        !existsInARange &&
+        !knownBeacons.some(b => b === JSON.stringify([possible.upper + 1, i]))
+      ) {
+        // if it's not in one of the ranges and it's not one of the known beacons, we've found it!
+        answer = (possible.upper + 1) * 4000000 + i
+      }
+    }
+  })
+
+  return answer
 }
 
-process('A', 26, 10)
-// process('B', 93, continueFnB, true)
+const processA = (expectedAnswer, testRow, realRow) => {
+  const sampleAnswer = beaconsA('./day_15/sample_input.txt', testRow)
+
+  console.log(`part A sample answer`, sampleAnswer)
+  if (sampleAnswer !== expectedAnswer) {
+    throw new Error(`part A sample answer should be ${expectedAnswer}`)
+  }
+
+  console.log(`part A real answer`, beaconsA('./day_15/input.txt', realRow))
+}
+
+const processB = (expectedAnswer, testMax, realMax) => {
+  const sampleAnswer = beaconsB('./day_15/sample_input.txt', testMax)
+
+  console.log(`part B sample answer`, sampleAnswer)
+  if (sampleAnswer !== expectedAnswer) {
+    throw new Error(`part B sample answer should be ${expectedAnswer}`)
+  }
+
+  console.log(`part B real answer`, beaconsB('./day_15/input.txt', realMax))
+}
+
+processA(26, 10, 2000000)
+processB(56000011, 20, 4000000)
+
+/*
+part A sample answer 26
+part A real answer 4737567
+part B sample answer 56000011
+part B real answer 13267474686239
+*/
