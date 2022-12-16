@@ -80,52 +80,37 @@ const beaconsB = (fileName, rowMax) => {
     })
   })
 
-  let answer
-  holder.forEach((h, i) => {
+  return holder.reduce((acc, cur, i) => {
     // this is essentially looking for "gaps" in the ranges - these are potential beacons
-    const possible = h.find(j => h.map(k => k.lower).includes(j.upper + 2))
+    const possible = cur.find(a => cur.map(b => b.lower).includes(a.upper + 2))
 
     if (possible) {
       const possibleX = possible.upper + 1
-      const existsInARange = h.some(j => j.lower <= possibleX && possibleX <= j.upper)
-
       if (
-        !existsInARange &&
-        !knownBeacons.some(b => b === JSON.stringify([possible.upper + 1, i]))
+        !cur.some(a => a.lower <= possibleX && possibleX <= a.upper) &&
+        !knownBeacons.some(b => b === JSON.stringify([possibleX, i]))
       ) {
         // if it's not in one of the ranges and it's not one of the known beacons, we've found it!
-        answer = (possible.upper + 1) * 4000000 + i
+        return possibleX * 4000000 + i
       }
     }
+    return acc
   })
-
-  return answer
 }
 
-const processA = (expectedAnswer, testRow, realRow) => {
-  const sampleAnswer = beaconsA('./day_15/sample_input.txt', testRow)
+const processA = (part, expectedAnswer, fn, testArg, realArg) => {
+  const sampleAnswer = fn('./day_15/sample_input.txt', testArg)
 
-  console.log(`part A sample answer`, sampleAnswer)
+  console.log(`part ${part} sample answer`, sampleAnswer)
   if (sampleAnswer !== expectedAnswer) {
-    throw new Error(`part A sample answer should be ${expectedAnswer}`)
+    throw new Error(`part ${part} sample answer should be ${expectedAnswer}`)
   }
 
-  console.log(`part A real answer`, beaconsA('./day_15/input.txt', realRow))
+  console.log(`part ${part} real answer`, fn('./day_15/input.txt', realArg))
 }
 
-const processB = (expectedAnswer, testMax, realMax) => {
-  const sampleAnswer = beaconsB('./day_15/sample_input.txt', testMax)
-
-  console.log(`part B sample answer`, sampleAnswer)
-  if (sampleAnswer !== expectedAnswer) {
-    throw new Error(`part B sample answer should be ${expectedAnswer}`)
-  }
-
-  console.log(`part B real answer`, beaconsB('./day_15/input.txt', realMax))
-}
-
-processA(26, 10, 2000000)
-processB(56000011, 20, 4000000)
+processA('A', 26, beaconsA, 10, 2000000)
+processA('B', 56000011, beaconsB, 20, 4000000)
 
 /*
 part A sample answer 26
