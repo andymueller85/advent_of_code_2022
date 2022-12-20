@@ -37,11 +37,11 @@ const stepMappingFn = (value, itemToMove) => (s, _, arr) => {
 
 const main = (filename, encryptionKey, iterations) => {
   const encrypted = parseInput(filename, encryptionKey)
-  let holder = encrypted.map((v, i) => ({ value: v, originalPos: i, curPos: i }))
+  let holder = encrypted.map((v, i) => ({ value: v, curPos: i }))
 
   for (let i = 0; i < iterations; i++) {
     encrypted.forEach((v, originalIndex) => {
-      const itemToMove = holder.find(s => s.originalPos === originalIndex)
+      const itemToMove = holder[originalIndex]
       if (itemToMove.value !== 0) {
         holder = holder.map(stepMappingFn(v, itemToMove))
       }
