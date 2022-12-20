@@ -1,62 +1,54 @@
 import * as fs from 'fs'
 
-const parseInput = fileName =>
+const parseInput = (fileName, encryptionKey) =>
   fs
     .readFileSync(fileName, 'utf8')
     .split(/\r?\n/)
     .filter(d => d)
-    .map(v => parseInt(v))
+    .map(v => parseInt(v) * encryptionKey)
 
 const isBetween = (test, lower, upper) => lower <= test && test <= upper
-const nthIndex = (length, start, n) => (start + n) % length
-const valAtN = (arr, n) => {
-  const zeroIndex = arr.findIndex(x => x.value === 0)
-  return arr[nthIndex(arr.length, zeroIndex, n)].value
+const valAtN = (arr, n) => arr[(arr.findIndex(x => x.value === 0) + n) % arr.length].value
+
+const getNewIndex = (value, itemToMove, lastIndex) => {
+  const temp = itemToMove.curPos + value
+  if (isBetween(temp, 1, lastIndex)) {
+    return temp
+  } else if (temp > lastIndex) {
+    return temp % lastIndex
+  }
+
+  return lastIndex - (Math.abs(temp) % lastIndex)
+}
+
+const stepMappingFn = (value, itemToMove) => (s, _, arr) => {
+  const newIndex = getNewIndex(value, itemToMove, arr.length - 1)
+
+  if (s.curPos === itemToMove.curPos) {
+    return { ...s, curPos: newIndex }
+  } else if (newIndex > itemToMove.curPos && isBetween(s.curPos, itemToMove.curPos, newIndex)) {
+    return { ...s, curPos: s.curPos - 1 }
+  } else if (newIndex < itemToMove.curPos && isBetween(s.curPos, newIndex, itemToMove.curPos)) {
+    return { ...s, curPos: s.curPos + 1 }
+  }
+
+  return s
 }
 
 const main = (filename, encryptionKey, iterations) => {
-  const encrypted = parseInput(filename)
-  let sorted = encrypted.map((v, i) => ({ value: v * encryptionKey, originalPos: i, curPos: i }))
+  const encrypted = parseInput(filename, encryptionKey)
+  let holder = encrypted.map((v, i) => ({ value: v, originalPos: i, curPos: i }))
 
   for (let i = 0; i < iterations; i++) {
     encrypted.forEach((v, originalIndex) => {
-      const modifiedVal = v * encryptionKey
-      const itemToMove = sorted.find(s => s.originalPos === originalIndex)
-      const lastIndex = encrypted.length - 1
+      const itemToMove = holder.find(s => s.originalPos === originalIndex)
       if (itemToMove.value !== 0) {
-        let newIndex
-        const temp = itemToMove.curPos + modifiedVal
-        if (isBetween(temp, 1, lastIndex)) {
-          newIndex = temp
-        } else if (temp > lastIndex) {
-          newIndex = temp % lastIndex
-        } else {
-          newIndex = lastIndex - (Math.abs(temp) % lastIndex)
-        }
-
-        const newStep = sorted.map(s => {
-          if (s.curPos === itemToMove.curPos) {
-            return { ...s, curPos: newIndex }
-          } else if (
-            newIndex > itemToMove.curPos &&
-            isBetween(s.curPos, itemToMove.curPos, newIndex)
-          ) {
-            return { ...s, curPos: s.curPos - 1 }
-          } else if (
-            newIndex < itemToMove.curPos &&
-            isBetween(s.curPos, newIndex, itemToMove.curPos)
-          ) {
-            return { ...s, curPos: s.curPos + 1 }
-          }
-
-          return s
-        })
-
-        sorted = newStep.sort((a, b) => a.curPos - b.curPos)
+        holder = holder.map(stepMappingFn(v, itemToMove))
       }
     })
   }
 
+  const sorted = holder.sort((a, b) => a.curPos - b.curPos)
   return valAtN(sorted, 1000) + valAtN(sorted, 2000) + valAtN(sorted, 3000)
 }
 
