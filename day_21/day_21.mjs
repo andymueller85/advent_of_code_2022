@@ -1,5 +1,7 @@
 import * as fs from 'fs'
 
+const isPresent = a => a !== undefined
+
 class Monkey {
   constructor(monkeyString, humanValue) {
     const [name, data] = monkeyString.split(': ')
@@ -8,11 +10,19 @@ class Monkey {
     this.name = name
 
     if (parsedData.length === 1) {
-      this.number =
-        name === 'humn' && humanValue !== undefined ? humanValue : parseInt(parsedData[0])
+      this.number = name === 'humn' && isPresent(humanValue) ? humanValue : parseInt(parsedData[0])
     } else {
       ;[this.term1, this.operator, this.term2] = parsedData
     }
+  }
+}
+
+const evaluateMonkey = monkeys => m => {
+  const m1 = monkeys.find(x => x.name === m.term1 && isPresent(x.number))
+  const m2 = monkeys.find(x => x.name === m.term2 && isPresent(x.number))
+
+  if (m1 && m2) {
+    m.number = eval(`${m1.number} ${m.operator} ${m2.number}`)
   }
 }
 
@@ -28,16 +38,7 @@ const partA = filename => {
   const rootMonkey = monkeys.find(m => m.name === 'root')
 
   while (!rootMonkey.number) {
-    monkeys
-      .filter(m => !m.number)
-      .forEach(m => {
-        const m1 = monkeys.find(m1 => m1.name === m.term1 && m1.number)
-        const m2 = monkeys.find(m2 => m2.name === m.term2 && m2.number)
-
-        if (m1 && m2) {
-          m.number = eval(`${m1.number} ${m.operator} ${m2.number}`)
-        }
-      })
+    monkeys.filter(m => !isPresent(m.number)).forEach(evaluateMonkey(monkeys))
   }
 
   return rootMonkey.number
@@ -56,32 +57,18 @@ const partB = (filename, sample) => {
     const m1 = monkeys.find(m1 => m1.name === rootMonkey.term1)
     const m2 = monkeys.find(m2 => m2.name === rootMonkey.term2)
 
-    while (m1.number === undefined || m2.number === undefined) {
-      const noNumberMonkeys = monkeys.filter(m => m.number === undefined)
-
-      for (let j = 0; j < noNumberMonkeys.length; j++) {
-        const thisMonkey = noNumberMonkeys[j]
-        const innerM1 = monkeys.find(x => x.name === thisMonkey.term1 && x.number !== undefined)
-        const innerM2 = monkeys.find(x => x.name === thisMonkey.term2 && x.number !== undefined)
-
-        if (innerM1 && innerM2) {
-          thisMonkey.number = eval(`${innerM1.number} ${thisMonkey.operator} ${innerM2.number}`)
-        }
-      }
+    while (!isPresent(m1.number) || !isPresent(m2.number)) {
+      monkeys.filter(m => !isPresent(m.number)).forEach(evaluateMonkey(monkeys))
     }
 
     if (m1.number === m2.number) {
-      // Found it!
-      return i
+      return i // found it!
     }
 
     // This has to flip because in the sample m1 stays constant and m2 changes and it's flipped in the real dataset.
     // Could probably find a dynamic way to do this, but meh.
-    if (sample ? m1.number < m2.number : m1.number > m2.number) {
-      start = i + 1
-    } else {
-      end = i - 1
-    }
+    if (sample ? m1.number < m2.number : m1.number > m2.number) start = i + 1
+    else end = i - 1
   }
 
   return 'fail'
