@@ -8,6 +8,8 @@ const NORTH = 'N'
 const WEST = 'W'
 const SOUTH = 'S'
 
+const directions = [EAST, SOUTH, WEST, NORTH]
+
 const constructGrid = g => {
   const grid = g
     .split(/\r?\n/)
@@ -44,7 +46,7 @@ const getNext = (row, cur, count) => {
   let loopCt = 0
   const firstOpenIndex = row.findIndex(x => x === OPEN_TILE)
   const reversedIndex = [...row].reverse().findIndex(x => x === OPEN_TILE)
-  const lastIndex = reversePosition(row, reversedIndex)
+  const lastIndex = reversePosition(row.length, reversedIndex)
   const firstWallIndex = row.findIndex(x => x === WALL)
   const rowStartsWithWall = firstWallIndex >= 0 && firstWallIndex < firstOpenIndex
 
@@ -62,46 +64,14 @@ const getNext = (row, cur, count) => {
   return pos
 }
 
-const turnRight = curHeading => {
-  switch (curHeading) {
-    case NORTH:
-      return EAST
-    case EAST:
-      return SOUTH
-    case SOUTH:
-      return WEST
-    case WEST:
-      return NORTH
-  }
-}
+const turnRight = curHeading => directions[(directions.indexOf(curHeading) + 1) % directions.length]
 
 const turnLeft = curHeading => {
-  switch (curHeading) {
-    case NORTH:
-      return WEST
-    case EAST:
-      return NORTH
-    case SOUTH:
-      return EAST
-    case WEST:
-      return SOUTH
-  }
+  const curIndex = directions.indexOf(curHeading)
+  return directions[curIndex === 0 ? directions.length - 1 : curIndex - 1]
 }
 
-const getHeadingVal = curHeading => {
-  switch (curHeading) {
-    case EAST:
-      return 0
-    case SOUTH:
-      return 1
-    case WEST:
-      return 2
-    case NORTH:
-      return 3
-  }
-}
-
-const reversePosition = (row, pos) => row.length - 1 - pos
+const reversePosition = (len, pos) => len - 1 - pos
 const getColumnArray = (grid, colNum) => grid.map(r => r[colNum])
 
 const partA = fileName => {
@@ -120,9 +90,9 @@ const partA = fileName => {
         position = [rowPos, newCol]
       } else if (curHeading === WEST) {
         const reversedRow = [...grid[rowPos]].reverse()
-        const reversedPosition = reversePosition(grid[rowPos], colPos)
+        const reversedPosition = reversePosition(grid[rowPos].length, colPos)
         const next = getNext(reversedRow, reversedPosition, step)
-        const newCol = reversePosition(grid[rowPos], next)
+        const newCol = reversePosition(grid[rowPos].length, next)
         position = [rowPos, newCol]
       } else if (curHeading === SOUTH) {
         const newRow = getNext(getColumnArray(grid, colPos), rowPos, step)
@@ -130,9 +100,9 @@ const partA = fileName => {
       } else if (curHeading === NORTH) {
         const columnArr = [...getColumnArray(grid, colPos)]
         const reversedArr = columnArr.reverse()
-        const reversedPosition = reversePosition(columnArr, rowPos)
+        const reversedPosition = reversePosition(columnArr.length, rowPos)
         const next = getNext(reversedArr, reversedPosition, step)
-        const newRow = reversePosition(columnArr, next)
+        const newRow = reversePosition(columnArr.length, next)
 
         position = [newRow, colPos]
       }
@@ -145,7 +115,7 @@ const partA = fileName => {
 
   const rowVal = (position[0] + 1) * 1000
   const colVal = (position[1] + 1) * 4
-  const headingVal = getHeadingVal(curHeading)
+  const headingVal = directions.indexOf(curHeading)
   return rowVal + colVal + headingVal
 }
 
