@@ -18,18 +18,14 @@ const constructGrid = g => {
 
   const longestRowLength = grid.reduce((acc, cur) => Math.max(acc, cur.length), 0)
 
-  return grid.map(r => {
-    if (r.length < longestRowLength) {
-      return [...r, ...THE_VOID.repeat(longestRowLength - r.length).split('')]
-    }
-    return r
-  })
+  return grid.map(r => [...r, ...THE_VOID.repeat(longestRowLength - r.length).split('')])
 }
 
 const parseInstructions = str => {
   const charArr = str.split('')
   const instructions = []
   let i = charArr.findIndex(c => isNaN(c))
+
   while (i >= 0) {
     const chunk = charArr.splice(0, i + 1)
     const dir = chunk.pop()
@@ -37,7 +33,9 @@ const parseInstructions = str => {
     instructions.push(dir)
     i = charArr.findIndex(c => isNaN(c))
   }
+
   instructions.push(parseInt(charArr.join('')))
+
   return instructions
 }
 
@@ -87,22 +85,25 @@ const partA = fileName => {
     if (typeof step === 'number') {
       if (curHeading === EAST) {
         const newCol = getNext(grid[rowPos], colPos, step)
+
         position = [rowPos, newCol]
       } else if (curHeading === WEST) {
-        const reversedRow = [...grid[rowPos]].reverse()
-        const reversedPosition = reversePosition(grid[rowPos].length, colPos)
-        const next = getNext(reversedRow, reversedPosition, step)
-        const newCol = reversePosition(grid[rowPos].length, next)
+        const newCol = reversePosition(
+          grid[rowPos].length,
+          getNext([...grid[rowPos]].reverse(), reversePosition(grid[rowPos].length, colPos), step)
+        )
+
         position = [rowPos, newCol]
       } else if (curHeading === SOUTH) {
         const newRow = getNext(getColumnArray(grid, colPos), rowPos, step)
+
         position = [newRow, colPos]
       } else if (curHeading === NORTH) {
-        const columnArr = [...getColumnArray(grid, colPos)]
-        const reversedArr = columnArr.reverse()
-        const reversedPosition = reversePosition(columnArr.length, rowPos)
-        const next = getNext(reversedArr, reversedPosition, step)
-        const newRow = reversePosition(columnArr.length, next)
+        const reversedArr = [...getColumnArray(grid, colPos)].reverse()
+        const newRow = reversePosition(
+          reversedArr.length,
+          getNext(reversedArr, reversePosition(reversedArr.length, rowPos), step)
+        )
 
         position = [newRow, colPos]
       }
