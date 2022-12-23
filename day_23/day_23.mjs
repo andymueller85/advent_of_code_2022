@@ -98,7 +98,7 @@ const EAST = 'E'
 
 const initializeDirections = () => [NORTH, SOUTH, WEST, EAST]
 
-const displayElves = elves => {
+const countNonElves = elves => {
   const boundaries = elves.reduce(
     (acc, cur) => ({
       n: Math.min(acc.n, cur.row),
@@ -115,24 +115,15 @@ const displayElves = elves => {
   )
 
   let count = 0
-  let rowIndex = -1
-
-  let grid = []
 
   for (let r = boundaries.n; r <= boundaries.s; r++) {
-    grid.push([])
-    rowIndex++
     for (let c = boundaries.w; c <= boundaries.e; c++) {
       const isElf = elves.some(e => e.row === r && e.col === c)
-      grid[rowIndex].push(isElf ? '#' : '.')
       if (!isElf) {
         count++
       }
     }
   }
-
-  grid.forEach(r => console.log(r.join('')))
-  console.log('\n\n ')
 
   return count
 }
@@ -154,73 +145,101 @@ const parseInput = fileName => {
   return elves
 }
 
+const allPropose = (elves, directions) => {
+  elves.forEach(e => {
+    if (e.hasNeighbors(elves) && !e.hasProposedDirection()) {
+      directions.forEach(d => {
+        if (!e.hasProposedDirection()) {
+          switch (d) {
+            case NORTH:
+              if (
+                !e.hasNorthNeighbor(elves) &&
+                !e.hasNorthEastNeighbor(elves) &&
+                !e.hasNorthWestNeighbor(elves)
+              ) {
+                e.proposeNorth()
+              }
+              break
+            case SOUTH:
+              if (
+                !e.hasSouthNeighbor(elves) &&
+                !e.hasSouthEastNeighbor(elves) &&
+                !e.hasSouthWestNeighbor(elves)
+              ) {
+                e.proposeSouth()
+              }
+              break
+            case WEST:
+              if (
+                !e.hasWestNeighbor(elves) &&
+                !e.hasNorthWestNeighbor(elves) &&
+                !e.hasSouthWestNeighbor(elves)
+              ) {
+                e.proposeWest()
+              }
+              break
+            case EAST:
+              if (
+                !e.hasEastNeighbor(elves) &&
+                !e.hasNorthEastNeighbor(elves) &&
+                !e.hasSouthEastNeighbor(elves)
+              ) {
+                e.proposeEast()
+              }
+              break
+          }
+        }
+      })
+    }
+  })
+}
+
+const moveElves = elves => {
+  return elves.reduce((acc, e) => {
+    if (e.hasProposedDirection()) {
+      if (e.proposedDirectionUnique(elves)) {
+        e.moveToProposedDirection()
+        return true
+      }
+    }
+    return acc
+  }, false)
+}
+
 const partA = fileName => {
   const directions = initializeDirections()
   const elves = parseInput(fileName)
-  displayElves(elves)
+  let turnCount = 0
 
-  Array.from({ length: 10 }).forEach(() => {
-    elves.forEach(e => {
-      if (e.hasNeighbors(elves) && !e.hasProposedDirection()) {
-        directions.forEach(d => {
-          if (!e.hasProposedDirection()) {
-            switch (d) {
-              case NORTH:
-                if (
-                  !e.hasNorthNeighbor(elves) &&
-                  !e.hasNorthEastNeighbor(elves) &&
-                  !e.hasNorthWestNeighbor(elves)
-                ) {
-                  e.proposeNorth()
-                }
-                break
-              case SOUTH:
-                if (
-                  !e.hasSouthNeighbor(elves) &&
-                  !e.hasSouthEastNeighbor(elves) &&
-                  !e.hasSouthWestNeighbor(elves)
-                ) {
-                  e.proposeSouth()
-                }
-                break
-              case WEST:
-                if (
-                  !e.hasWestNeighbor(elves) &&
-                  !e.hasNorthWestNeighbor(elves) &&
-                  !e.hasSouthWestNeighbor(elves)
-                ) {
-                  e.proposeWest()
-                }
-                break
-              case EAST:
-                if (
-                  !e.hasEastNeighbor(elves) &&
-                  !e.hasNorthEastNeighbor(elves) &&
-                  !e.hasSouthEastNeighbor(elves)
-                ) {
-                  e.proposeEast()
-                }
-                break
-            }
-          }
-        })
-      }
-    })
+  while (turnCount < 10) {
+    turnCount++
+    allPropose(elves, directions)
 
-    elves.forEach(e => {
-      if (e.hasProposedDirection()) {
-        if (e.proposedDirectionUnique(elves)) {
-          e.moveToProposedDirection()
-        }
-      }
-    })
+    moveElves(elves)
 
     elves.forEach(e => e.clearProposedDirection())
-
     directions.push(directions.shift())
-  })
+  }
 
-  return displayElves(elves)
+  return countNonElves(elves)
+}
+
+const partB = fileName => {
+  const directions = initializeDirections()
+  const elves = parseInput(fileName)
+  let someElfMoved = false
+  let turnCount = 0
+
+  while (turnCount === 0 || someElfMoved) {
+    turnCount++
+
+    allPropose(elves, directions)
+    someElfMoved = moveElves(elves)
+    elves.forEach(e => e.clearProposedDirection())
+    directions.push(directions.shift())
+  }
+
+  return turnCount
 }
 
 const process = (part, expectedAnswer, fn) => {
@@ -235,3 +254,4 @@ const process = (part, expectedAnswer, fn) => {
 }
 
 process('A', 110, partA)
+process('B', 20, partB)
