@@ -145,7 +145,7 @@ const parseInput = fileName => {
   return elves
 }
 
-const allPropose = (elves, directions) => {
+const proposeMoves = (elves, directions) => {
   elves.forEach(e => {
     if (e.hasNeighbors(elves) && !e.hasProposedDirection()) {
       directions.forEach(d => {
@@ -209,17 +209,14 @@ const moveElves = elves => {
 const partA = fileName => {
   const directions = initializeDirections()
   const elves = parseInput(fileName)
-  let turnCount = 0
 
-  while (turnCount < 10) {
-    turnCount++
-    allPropose(elves, directions)
-
+  Array.from({ length: 10 }).forEach(() => {
+    proposeMoves(elves, directions)
     moveElves(elves)
 
     elves.forEach(e => e.clearProposedDirection())
     directions.push(directions.shift())
-  }
+  })
 
   return countNonElves(elves)
 }
@@ -232,9 +229,9 @@ const partB = fileName => {
 
   while (turnCount === 0 || someElfMoved) {
     turnCount++
-
-    allPropose(elves, directions)
+    proposeMoves(elves, directions)
     someElfMoved = moveElves(elves)
+
     elves.forEach(e => e.clearProposedDirection())
     directions.push(directions.shift())
   }
