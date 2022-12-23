@@ -147,7 +147,7 @@ const parseInput = fileName => {
 
 const proposeMoves = (elves, directions) => {
   elves.forEach(e => {
-    if (e.hasNeighbors(elves) && !e.hasProposedDirection()) {
+    if (!e.hasProposedDirection() && e.hasNeighbors(elves)) {
       directions.forEach(d => {
         if (!e.hasProposedDirection()) {
           switch (d) {
