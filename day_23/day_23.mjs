@@ -118,8 +118,7 @@ const countNonElves = elves => {
 
   for (let r = boundaries.n; r <= boundaries.s; r++) {
     for (let c = boundaries.w; c <= boundaries.e; c++) {
-      const isElf = elves.some(e => e.row === r && e.col === c)
-      if (!isElf) {
+      if (!elves.some(e => e.row === r && e.col === c)) {
         count++
       }
     }
@@ -147,7 +146,7 @@ const parseInput = fileName => {
 
 const proposeMoves = (elves, directions) => {
   elves.forEach(e => {
-    if (!e.hasProposedDirection() && e.hasNeighbors(elves)) {
+    if (e.hasNeighbors(elves)) {
       directions.forEach(d => {
         if (!e.hasProposedDirection()) {
           switch (d) {
@@ -194,17 +193,14 @@ const proposeMoves = (elves, directions) => {
   })
 }
 
-const moveElves = elves => {
-  return elves.reduce((acc, e) => {
-    if (e.hasProposedDirection()) {
-      if (e.proposedDirectionUnique(elves)) {
-        e.moveToProposedDirection()
-        return true
-      }
+const moveElves = elves =>
+  elves.reduce((acc, e) => {
+    if (e.hasProposedDirection() && e.proposedDirectionUnique(elves)) {
+      e.moveToProposedDirection()
+      return true
     }
     return acc
   }, false)
-}
 
 const partA = fileName => {
   const directions = initializeDirections()
