@@ -7,19 +7,19 @@ class Elf {
   }
 
   proposeNorth() {
-    this.proposedDirection = { row: this.row - 1, col: this.col }
+    this.proposal = { row: this.row - 1, col: this.col }
   }
 
   proposeEast() {
-    this.proposedDirection = { row: this.row, col: this.col + 1 }
+    this.proposal = { row: this.row, col: this.col + 1 }
   }
 
   proposeSouth() {
-    this.proposedDirection = { row: this.row + 1, col: this.col }
+    this.proposal = { row: this.row + 1, col: this.col }
   }
 
   proposeWest() {
-    this.proposedDirection = { row: this.row, col: this.col - 1 }
+    this.proposal = { row: this.row, col: this.col - 1 }
   }
 
   hasNorthNeighbor(elves) {
@@ -67,27 +67,26 @@ class Elf {
     )
   }
 
-  hasProposedDirection() {
-    return this.proposedDirection !== undefined
+  hasProposal() {
+    return this.proposal !== undefined
   }
 
-  proposedDirectionUnique(elves) {
+  proposalUnique(elves) {
     return !elves
       .filter(e => !(e.row === this.row && e.col === this.col))
       .some(
         other =>
-          other.proposedDirection?.row === this.proposedDirection.row &&
-          other.proposedDirection?.col === this.proposedDirection.col
+          other.proposal?.row === this.proposal.row && other.proposal?.col === this.proposal.col
       )
   }
 
-  moveToProposedDirection() {
-    this.row = this.proposedDirection.row
-    this.col = this.proposedDirection.col
+  moveToProposal() {
+    this.row = this.proposal.row
+    this.col = this.proposal.col
   }
 
-  clearProposedDirection() {
-    this.proposedDirection = undefined
+  clearProposal() {
+    this.proposal = undefined
   }
 }
 
@@ -148,7 +147,7 @@ const proposeMoves = (elves, directions) => {
   elves.forEach(e => {
     if (e.hasNeighbors(elves)) {
       directions.forEach(d => {
-        if (!e.hasProposedDirection()) {
+        if (!e.hasProposal()) {
           switch (d) {
             case NORTH:
               if (
@@ -195,8 +194,8 @@ const proposeMoves = (elves, directions) => {
 
 const moveElves = elves =>
   elves.reduce((acc, e) => {
-    if (e.hasProposedDirection() && e.proposedDirectionUnique(elves)) {
-      e.moveToProposedDirection()
+    if (e.hasProposal() && e.proposalUnique(elves)) {
+      e.moveToProposal()
       return true
     }
     return acc
@@ -210,7 +209,7 @@ const partA = fileName => {
     proposeMoves(elves, directions)
     moveElves(elves)
 
-    elves.forEach(e => e.clearProposedDirection())
+    elves.forEach(e => e.clearProposal())
     directions.push(directions.shift())
   })
 
@@ -228,7 +227,7 @@ const partB = fileName => {
     proposeMoves(elves, directions)
     someElfMoved = moveElves(elves)
 
-    elves.forEach(e => e.clearProposedDirection())
+    elves.forEach(e => e.clearProposal())
     directions.push(directions.shift())
   }
 
