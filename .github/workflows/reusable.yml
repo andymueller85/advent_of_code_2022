@@ -1,0 +1,17 @@
+name: Reusable workflow
+on:
+  workflow_call:
+    inputs:
+      user-entered-git-tag:
+        description: The Git tag to deploy - overrides the 'promote from lower environment' functionality
+        required: false
+        type: string
+
+jobs:
+  test:
+    runs-on: [github]
+    steps:
+      - name: run test
+        id: run-test
+        if: inputs.user-entered-git-tag != ''
+        run: echo "hi mom"

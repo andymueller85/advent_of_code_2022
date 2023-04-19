@@ -1,0 +1,14 @@
+name: ▶️ NGPOS - STAGE Promote
+env:
+  NPM_AUTH_IDENT: '${{ secrets.NPM_AUTH_IDENT }}'
+on:
+  workflow_dispatch:
+    inputs:
+      git-tag:
+        required: false
+jobs:
+  call-reusable-workflow:
+    name: Deploy NGPOS to stage
+    uses: andymueller85/advent_of_code_2022/.github/workflows/reusable.yml@main
+    with:
+      user-entered-git-tag: ${{ github.event.inputs.git-tag }}
