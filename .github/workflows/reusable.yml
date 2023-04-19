@@ -6,6 +6,12 @@ on:
         description: The Git tag to deploy - overrides the 'promote from lower environment' functionality
         required: false
         type: string
+      test-val-1:
+        required: true
+        type: string
+      test-val-2:
+        required: true
+        type: string
 
 jobs:
   test:
@@ -13,5 +19,5 @@ jobs:
     steps:
       - name: run test
         id: run-test
-        if: inputs.user-entered-git-tag != ''
+        if: inputs.user-entered-git-tag != '' || (inputs.test-val-1 != inputs.test-val-2)
         run: echo "hi mom"
