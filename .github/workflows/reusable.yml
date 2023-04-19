@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: [github]
+    runs-on: ubuntu-latest
     steps:
       - name: run test
         id: run-test
