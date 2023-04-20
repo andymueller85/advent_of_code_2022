@@ -14,10 +14,14 @@ on:
         type: string
 
 jobs:
-  test:
+  set-output:
     runs-on: ubuntu-latest
     steps:
+      - name: set output
+        id: set-output
+        run: echo "should-deploy=${{ inputs.user-entered-git-tag != '' || (inputs.test-val-1 != inputs.test-val-2) }}" >> $GITHUB_OUTPUT
+
       - name: run test
         id: run-test
-        if: inputs.user-entered-git-tag != '' || (inputs.test-val-1 != inputs.test-val-2)
+        if: steps.set-output.outputs.should-deploy
         run: echo "hi mom"
