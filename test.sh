@@ -23,11 +23,11 @@ echo "VERSION_TO_DEPLOY: $VERSION_TO_DEPLOY"
 
 if [[ ! -z "$USER_ENTERED_GIT_TAG" ]]; then
   echo "User-entered git tag provided. Will attempt to deploy $USER_ENTERED_GIT_TAG"
-  echo "should-deploy='true' >> $GITHUB_OUTPUT"
+  echo "should-deploy='true'" >> "$GITHUB_OUTPUT"
 elif [[ "$CURRENTLY_DEPLOYED_VERSION" != "$VERSION_TO_DEPLOY" ]]; then
   echo "Version to deploy is different from currently deployed version - will attempt to deploy $VERSION_TO_DEPLOY"
-  echo "should-deploy='true' >> $GITHUB_OUTPUT"
+  echo "should-deploy='true'" >> "$GITHUB_OUTPUT"
 else
   echo "Version to deploy matches currently deployed version - skipping deployment"
-  echo "should-deploy='false' >> $GITHUB_OUTPUT"
+  echo "should-deploy='false'" >> "$GITHUB_OUTPUT"
 fi
