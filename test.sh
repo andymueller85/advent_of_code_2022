@@ -29,5 +29,4 @@ elif [[ "$CURRENTLY_DEPLOYED_VERSION" != "$VERSION_TO_DEPLOY" ]]; then
   echo "should-deploy='true'" >> "$GITHUB_OUTPUT"
 else
   echo "Version to deploy matches currently deployed version - skipping deployment"
-  echo "should-deploy='false'" >> "$GITHUB_OUTPUT"
 fi
