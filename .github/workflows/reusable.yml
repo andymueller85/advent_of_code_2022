@@ -31,4 +31,5 @@ jobs:
 
       - name: run test
         id: run-test
-        run: echo ${{ steps.set-output.outputs.should-deploy }}
+        if: ${{ steps.set-output.outputs.should-deploy == true }}
+        run: echo "hi mom"
