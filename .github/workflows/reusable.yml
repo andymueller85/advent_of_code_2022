@@ -17,6 +17,10 @@ jobs:
   set-output:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout repo
+        id: checkout-repo
+        uses: actions/checkout@v3
+
       - name: set output
         id: set-output
         run: |
