@@ -19,7 +19,11 @@ jobs:
     steps:
       - name: set output
         id: set-output
-        run: echo "should-deploy=${{ inputs.user-entered-git-tag != '' || (inputs.test-val-1 != inputs.test-val-2) }}" >> $GITHUB_OUTPUT
+        run: |
+          ./compareVersions.sh \
+            --user-entered-git-tag=${{ inputs.user-entered-git-tag }} \
+            --currently-deployed-version=${{ inputs.test-val-1 }} \
+            --version-to-deploy=${{ inputs.test-val-2 }}
 
       - name: run test
         id: run-test
